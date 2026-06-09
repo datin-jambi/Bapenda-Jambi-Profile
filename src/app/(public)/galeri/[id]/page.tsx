@@ -5,18 +5,20 @@ import { ArrowLeft, Images } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
-interface Props { params: { id: string } }
+interface Props { params: Promise<{ id: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const gallery = await prisma.gallery.findUnique({ where: { id: params.id } });
+  const { id } = await params;
+  const gallery = await prisma.gallery.findUnique({ where: { id: parseInt(id, 10) } });
   if (!gallery) return { title: "Tidak Ditemukan" };
   return { title: gallery.title, description: gallery.description || undefined };
 }
 
 export default async function GalleryDetailPage({ params }: Props) {
+  const { id } = await params;
   const gallery = await prisma.gallery.findUnique({
-    where: { id: params.id, status: "PUBLISHED" },
-    include: { items: { orderBy: { sortOrder: "asc" } }, author: { select: { name: true } } },
+    where: { id: parseInt(id, 10), status: "PUBLISHED" },
+    include: { items: { where: { deletedAt: null }, orderBy: { sortOrder: "asc" } }, author: { select: { name: true } } },
   });
 
   if (!gallery) notFound();

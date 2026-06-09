@@ -7,11 +7,14 @@ import { createAuditLog } from "@/lib/audit";
 import { withErrorHandler, resolveParams } from "@/lib/with-error-handler";
 import { UnauthorizedError, ForbiddenError, ValidationError, NotFoundError, BadRequestError } from "@/lib/errors";
 
+const canManageUser = (actor: { role: string; id: number }, targetId: number) =>
+  actor.role === "Super_Admin" || actor.role === "Admin" || actor.id === targetId;
+
 export const GET = withErrorHandler(async (request: NextRequest, ctx) => {
   const user = await getAuthUser();
   if (!user) throw new UnauthorizedError();
   const { id } = await resolveParams(ctx);
-  if (user.role !== "Super_Admin" && user.id !== id) throw new ForbiddenError();
+  if (!canManageUser(user, id)) throw new ForbiddenError();
 
   const found = await userRepository.findById(id);
   if (!found) throw new NotFoundError("User tidak ditemukan");
@@ -22,7 +25,7 @@ export const PUT = withErrorHandler(async (request: NextRequest, ctx) => {
   const user = await getAuthUser();
   if (!user) throw new UnauthorizedError();
   const { id } = await resolveParams(ctx);
-  if (user.role !== "Super_Admin" && user.id !== id) throw new ForbiddenError();
+  if (!canManageUser(user, id)) throw new ForbiddenError();
 
   const body = await request.json();
   const parsed = updateUserSchema.safeParse(body);
@@ -30,7 +33,7 @@ export const PUT = withErrorHandler(async (request: NextRequest, ctx) => {
     throw new ValidationError("Data tidak valid", parsed.error.flatten().fieldErrors as Record<string, string[]>);
   }
 
-  if (parsed.data.role && user.role !== "Super_Admin") {
+  if (parsed.data.role && user.role !== "Super_Admin" && user.role !== "Admin") {
     delete parsed.data.role;
   }
 

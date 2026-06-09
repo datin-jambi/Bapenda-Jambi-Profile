@@ -27,7 +27,7 @@ export default function CmsGalleriesPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["cms-galleries"],
-    queryFn: () => api.get("/cms/galleries?limit=20").then((r) => r.data.data),
+    queryFn: () => api.get("/cms/galleries?limit=20").then((r) => r.data),
   });
 
   const approveMutation = useMutation({

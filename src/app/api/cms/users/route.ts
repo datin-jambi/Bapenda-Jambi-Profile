@@ -11,7 +11,7 @@ import { UnauthorizedError, ForbiddenError, ValidationError, ConflictError } fro
 export const GET = withErrorHandler(async (request: NextRequest) => {
   const user = await getAuthUser();
   if (!user) throw new UnauthorizedError();
-  if (user.role !== "Super_Admin" && user.role !== "Admin") throw new ForbiddenError();
+  if (user.role !== "Super_Admin" && user.role !== "Admin") throw new ForbiddenError("Hanya Super Admin atau Admin yang dapat mengakses fitur ini");
 
   const { searchParams } = request.nextUrl;
   const { page, limit, skip } = getPaginationParams(searchParams);
@@ -44,6 +44,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     uptdId: parsed.data.uptdId,
     phone: parsed.data.phone,
     gender: parsed.data.gender,
+    isActive: parsed.data.isActive ?? true,
   });
 
   await createAuditLog({ userId: user.id, action: "CREATE_USER", entityType: "User", entityId: created.id });

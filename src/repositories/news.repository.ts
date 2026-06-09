@@ -58,7 +58,8 @@ export const newsRepository = {
   async create(data: {
     title: string; slug: string; categoryId: number; authorId: number;
     excerpt?: string | null; content: string; thumbnailUrl?: string | null;
-    status: ContentStatus; seoTitle?: string | null; seoDescription?: string | null;
+    status: ContentStatus; publishedAt?: Date | null;
+    seoTitle?: string | null; seoDescription?: string | null;
   }) {
     return prisma.news.create({ data });
   },

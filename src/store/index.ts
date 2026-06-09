@@ -37,11 +37,11 @@ export const useModalStore = create<ModalStore>((set) => ({
 
 interface AuthStore {
   user: {
-    id: string;
+    id: number;
     name: string;
     email: string;
     role: string;
-    uptdId?: string | null;
+    uptdId?: number | null;
     avatarUrl?: string | null;
   } | null;
   setUser: (user: AuthStore["user"]) => void;

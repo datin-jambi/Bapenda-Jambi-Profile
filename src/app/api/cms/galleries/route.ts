@@ -15,10 +15,11 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const { searchParams } = request.nextUrl;
   const { page, limit, skip } = getPaginationParams(searchParams);
   const status = searchParams.get("status") as ContentStatus | null;
+  const search = searchParams.get("search") || undefined;
   const authorId = user.role === "Editor" || user.role === "Admin_Uptd" ? user.id : undefined;
 
   const { data, total } = await galleryRepository.findAll({
-    skip, limit, status: status || undefined, authorId,
+    skip, limit, status: status || undefined, authorId, search,
   });
   return ApiResponse.paginated(data, buildMeta(page, limit, total));
 });

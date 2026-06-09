@@ -61,7 +61,7 @@ export default function CreateGalleryPage() {
             </div>
             <div className="space-y-2">
               <Label>Gambar Cover</Label>
-              <ImageUpload value={coverImage || ""} onChange={(url) => setValue("coverImage", url)} folder="/galleries" />
+              <ImageUpload value={coverImage || ""} onChange={(url) => setValue("coverImage", url)} folder="/bapenda/gallery" />
             </div>
           </CardContent>
         </Card>

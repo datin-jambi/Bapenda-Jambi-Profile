@@ -14,7 +14,7 @@ interface FaqItem {
 }
 
 export function FaqSection({ faqs }: { faqs: FaqItem[] }) {
-  const [openId, setOpenId] = useState<string | null>(faqs[0]?.id || null);
+  const [openId, setOpenId] = useState<number | null>(faqs[0]?.id ?? null);
 
   if (!faqs.length) return null;
 
@@ -38,6 +38,7 @@ export function FaqSection({ faqs }: { faqs: FaqItem[] }) {
                 className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
                 onClick={() => setOpenId(openId === faq.id ? null : faq.id)}
                 aria-expanded={openId === faq.id}
+
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="flex-shrink-0 w-2 h-2 rounded-full bg-secondary" />

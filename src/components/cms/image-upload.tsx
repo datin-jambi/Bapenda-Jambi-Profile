@@ -9,12 +9,13 @@ import api from "@/lib/axios";
 
 interface ImageUploadProps {
   value: string;
-  onChange: (url: string) => void;
+  onChange: (url: string, fileId?: string) => void;
   folder?: string;
   accept?: string;
+  disabled?: boolean;
 }
 
-export function ImageUpload({ value, onChange, folder = "/uploads", accept = "image/*" }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, folder = "/bapenda/uploads", accept = "image/*", disabled = false }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -28,30 +29,23 @@ export function ImageUpload({ value, onChange, folder = "/uploads", accept = "im
 
     setUploading(true);
     try {
-      const authRes = await api.get("/upload/auth");
-      const { token, expire, signature } = authRes.data.data;
-
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("publicKey", process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY || "");
-      formData.append("signature", signature);
-      formData.append("expire", expire);
-      formData.append("token", token);
-      formData.append("fileName", file.name);
       formData.append("folder", folder);
 
-      const uploadRes = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
-        method: "POST",
-        body: formData,
+      const res = await api.post("/upload/image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      if (!uploadRes.ok) throw new Error("Upload gagal");
+      const result = res.data.data;
+      if (!result?.url) throw new Error("Response tidak mengandung URL gambar");
 
-      const result = await uploadRes.json();
-      onChange(result.url);
+      onChange(result.url, result.fileId);
       toast.success("Gambar berhasil diupload");
-    } catch (err) {
-      toast.error("Gagal mengupload gambar");
+    } catch (err: any) {
+      console.error("[ImageUpload] error:", err);
+      const msg = err.response?.data?.message || err.message || "Gagal mengupload gambar";
+      toast.error(msg);
     } finally {
       setUploading(false);
     }
@@ -62,25 +56,32 @@ export function ImageUpload({ value, onChange, folder = "/uploads", accept = "im
       {value ? (
         <div className="relative w-full max-w-sm">
           <div className="relative aspect-video rounded-lg overflow-hidden border bg-gray-50">
-            <NextImage src={value} alt="Preview" fill className="object-cover" />
+            <NextImage src={value} alt="Preview" fill className="object-cover" unoptimized />
           </div>
-          <Button
-            type="button"
-            variant="destructive"
-            size="icon"
-            className="absolute -top-2 -right-2 h-6 w-6"
-            onClick={() => onChange("")}
-          >
-            <X className="h-3 w-3" />
-          </Button>
+          {!disabled && (
+            <Button
+              type="button"
+              variant="destructive"
+              size="icon"
+              className="absolute -top-2 -right-2 h-6 w-6"
+              onClick={() => onChange("")}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          )}
         </div>
       ) : (
         <div
-          className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center hover:border-primary/50 cursor-pointer transition-colors"
-          onClick={() => inputRef.current?.click()}
-          onDragOver={(e) => e.preventDefault()}
+          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+            disabled
+              ? "border-gray-100 bg-gray-50 cursor-not-allowed opacity-60"
+              : "border-gray-200 hover:border-primary/50 cursor-pointer"
+          }`}
+          onClick={() => !disabled && inputRef.current?.click()}
+          onDragOver={(e) => { if (!disabled) e.preventDefault(); }}
           onDrop={(e) => {
             e.preventDefault();
+            if (disabled) return;
             const file = e.dataTransfer.files[0];
             if (file) handleUpload(file);
           }}
@@ -105,6 +106,7 @@ export function ImageUpload({ value, onChange, folder = "/uploads", accept = "im
         type="file"
         accept={accept}
         className="hidden"
+        disabled={disabled}
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) handleUpload(file);
@@ -112,7 +114,7 @@ export function ImageUpload({ value, onChange, folder = "/uploads", accept = "im
         }}
       />
 
-      {!value && (
+      {!value && !disabled && (
         <Button type="button" variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={uploading}>
           <Upload className="mr-2 h-4 w-4" />
           Pilih Gambar

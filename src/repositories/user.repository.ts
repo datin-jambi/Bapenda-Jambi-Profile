@@ -49,11 +49,15 @@ export const userRepository = {
   async create(data: {
     name: string; email: string; password: string; role: Role;
     uptdId?: number | null; phone?: string | null; gender?: string | null;
+    isActive?: boolean;
   }) {
     const passwordHash = await bcrypt.hash(data.password, 12);
     return prisma.user.create({
-      data: { name: data.name, email: data.email, passwordHash, role: data.role,
-        uptdId: data.uptdId, phone: data.phone, gender: data.gender },
+      data: {
+        name: data.name, email: data.email, passwordHash, role: data.role,
+        uptdId: data.uptdId, phone: data.phone, gender: data.gender,
+        isActive: data.isActive ?? true,
+      },
     });
   },
 

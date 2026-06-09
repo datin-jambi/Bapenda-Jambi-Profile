@@ -23,7 +23,7 @@ const COOKIE_OPTIONS = {
 // ─── Token Generation ─────────────────────────────────────────────────────────
 
 export async function generateAccessToken(payload: Omit<JwtPayload, "iat" | "exp">): Promise<string> {
-  return new SignJWT({ ...payload })
+  return new SignJWT({ ...payload, sub: String(payload.sub) })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(ACCESS_TOKEN_EXPIRY)

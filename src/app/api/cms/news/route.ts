@@ -5,9 +5,9 @@ import { newsSchema } from "@/lib/validations";
 import { ApiResponse, getPaginationParams, buildMeta } from "@/lib/api-response";
 import { createAuditLog } from "@/lib/audit";
 import { ContentStatus } from "@prisma/client";
-import { hasPermission, canPublish } from "@/types";
+import { hasPermission } from "@/types";
 import { withErrorHandler } from "@/lib/with-error-handler";
-import { UnauthorizedError, ForbiddenError, ValidationError, NotFoundError, BadRequestError } from "@/lib/errors";
+import { UnauthorizedError, ForbiddenError, ValidationError, ConflictError } from "@/lib/errors";
 import slugify from "slugify";
 
 export const GET = withErrorHandler(async (request: NextRequest) => {
@@ -44,11 +44,16 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     throw new ValidationError("Data tidak valid", parsed.error.flatten().fieldErrors as Record<string, string[]>);
   }
 
-  const slug = slugify(parsed.data.title, { lower: true, strict: true });
+  let slug = slugify(parsed.data.title, { lower: true, strict: true });
+
+  // Ensure slug uniqueness
+  const existing = await newsRepository.findBySlug(slug);
+  if (existing) {
+    slug = `${slug}-${Date.now()}`;
+  }
 
   let status: ContentStatus = "DRAFT";
-  if (user.role === "Admin_Uptd") status = "PENDING_REVIEW";
-  else if (user.role === "Editor") status = "PENDING_REVIEW";
+  if (user.role === "Admin_Uptd" || user.role === "Editor") status = "PENDING_REVIEW";
 
   const news = await newsRepository.create({
     ...parsed.data, slug, authorId: user.id, status,

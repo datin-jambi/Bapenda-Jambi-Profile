@@ -33,7 +33,7 @@ export default function CmsNewsPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["cms-news", page, search],
     queryFn: () =>
-      api.get(`/cms/news?page=${page}&limit=10${search ? `&search=${search}` : ""}`).then((r) => r.data.data),
+      api.get(`/cms/news?page=${page}&limit=10${search ? `&search=${search}` : ""}`).then((r) => r.data),
   });
 
   const mutate = useMutation({
@@ -58,7 +58,7 @@ export default function CmsNewsPage() {
   const canDelete = user?.role === "Super_Admin";
 
   const news = data?.data ?? [];
-  const pagination = data?.pagination;
+  const pagination = data?.meta;
 
   return (
     <div className="space-y-6">
@@ -86,7 +86,7 @@ export default function CmsNewsPage() {
             </div>
             {pagination && (
               <span className="text-sm text-muted-foreground">
-                Total: {pagination.total} berita
+                Total: {pagination.totalItems} berita
               </span>
             )}
           </div>
@@ -171,7 +171,7 @@ export default function CmsNewsPage() {
       {pagination && pagination.totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Halaman {pagination.page} dari {pagination.totalPages}
+            Halaman {pagination.page} dari {pagination.totalPages} ({pagination.totalItems} berita)
           </p>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Sebelumnya</Button>

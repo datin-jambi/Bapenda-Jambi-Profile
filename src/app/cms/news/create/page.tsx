@@ -95,7 +95,7 @@ export default function CreateNewsPage() {
             <ImageUpload
               value={thumbnailUrl || ""}
               onChange={(url) => setValue("thumbnailUrl", url)}
-              folder="/news"
+              folder="/bapenda/news"
             />
           </CardContent>
         </Card>

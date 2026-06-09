@@ -14,6 +14,7 @@ export const registerSchema = z.object({
   uptdId: z.number().int().optional().nullable(),
   phone: z.string().optional().nullable(),
   gender: z.string().optional().nullable(),
+  isActive: z.boolean().optional().default(true),
 });
 
 export const updateUserSchema = z.object({
@@ -61,6 +62,7 @@ export const gallerySchema = z.object({
 
 export const galleryItemSchema = z.object({
   mediaType: z.enum(["IMAGE", "VIDEO", "PDF"]),
+  fileId: z.string().optional().nullable(),
   fileUrl: z.string().url("URL file tidak valid"),
   title: z.string().optional().nullable(),
   description: z.string().optional().nullable(),

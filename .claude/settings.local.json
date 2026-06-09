@@ -4,7 +4,17 @@
       "Bash(npm run *)",
       "Bash(npm install *)",
       "Bash(npx tsc *)",
-      "Bash(grep -v \"^$\")"
+      "Bash(grep -v \"^$\")",
+      "Bash(xargs grep -l \"upload\")",
+      "Bash(npx prisma *)",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"require\\('dotenv'\\).config\\(\\); console.log\\('DATABASE_URL:', process.env.DATABASE_URL\\)\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const env=fs.readFileSync\\('.env','utf8'\\); const match=env.match\\(/DATABASE_URL=\\\\\"\\(.+\\)\\\\\"/\\); console.log\\('DATABASE_URL:', match?match[1]:'not found'\\)\")",
+      "Bash(git checkout *)",
+      "Bash(cd \"c:\\\\Users\\\\ASUS\\\\Documents\\\\BPKPD\\\\Code\\\\Bapeda-Jambi-Profile\" && rm -rf .next && echo \"Cache cleared\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapeda-Jambi-Profile\\.next"
     ]
   }
 }

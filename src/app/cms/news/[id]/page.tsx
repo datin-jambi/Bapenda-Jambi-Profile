@@ -148,7 +148,12 @@ export default function EditNewsPage() {
             </div>
             <div className="space-y-2">
               <Label>Kategori *</Label>
-              <Select defaultValue={String(newsData?.categoryId)} onValueChange={(v) => setValue("categoryId", parseInt(v, 10))} disabled={!canEdit}>
+              <Select
+                key={newsData?.categoryId}
+                value={String(watch("categoryId") || "")}
+                onValueChange={(v) => setValue("categoryId", parseInt(v, 10), { shouldDirty: true })}
+                disabled={!canEdit}
+              >
                 <SelectTrigger><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
                 <SelectContent>
                   {categories?.map((cat: any) => (
@@ -156,6 +161,7 @@ export default function EditNewsPage() {
                   ))}
                 </SelectContent>
               </Select>
+              {errors.categoryId && <p className="text-xs text-destructive">{errors.categoryId.message}</p>}
             </div>
             <div className="space-y-2">
               <Label>Ringkasan</Label>
@@ -172,7 +178,12 @@ export default function EditNewsPage() {
         <Card>
           <CardHeader><CardTitle className="text-base">Gambar Thumbnail</CardTitle></CardHeader>
           <CardContent>
-            <ImageUpload value={thumbnailUrl || ""} onChange={(url) => setValue("thumbnailUrl", url)} folder="/news" />
+            <ImageUpload
+              value={thumbnailUrl || ""}
+              onChange={(url) => setValue("thumbnailUrl", url, { shouldDirty: true })}
+              folder="/bapenda/news"
+              disabled={!canEdit}
+            />
           </CardContent>
         </Card>
 

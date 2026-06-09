@@ -2,11 +2,17 @@ import { prisma } from "@/lib/prisma";
 import { ContentStatus } from "@prisma/client";
 
 export const galleryRepository = {
-  async findAll(params: { skip: number; limit: number; status?: ContentStatus; authorId?: number }) {
+  async findAll(params: { skip: number; limit: number; status?: ContentStatus; authorId?: number; search?: string }) {
     const where = {
       deletedAt: null,
       ...(params.status && { status: params.status }),
       ...(params.authorId && { authorId: params.authorId }),
+      ...(params.search && {
+        OR: [
+          { title: { contains: params.search, mode: "insensitive" as const } },
+          { description: { contains: params.search, mode: "insensitive" as const } },
+        ],
+      }),
     };
     const [data, total] = await Promise.all([
       prisma.gallery.findMany({
@@ -51,7 +57,7 @@ export const galleryRepository = {
   },
 
   async addItem(galleryId: number, data: {
-    mediaType: "IMAGE" | "VIDEO" | "PDF"; fileUrl: string;
+    mediaType: "IMAGE" | "VIDEO" | "PDF"; fileUrl: string; fileId?: string | null;
     title?: string | null; description?: string | null; sortOrder?: number;
   }) {
     return prisma.galleryItem.create({ data: { galleryId, ...data } });

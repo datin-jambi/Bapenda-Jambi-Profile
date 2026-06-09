@@ -8,6 +8,7 @@ import { ContentStatus } from "@prisma/client";
 import { createAuditLog } from "@/lib/audit";
 import { withErrorHandler, resolveParams } from "@/lib/with-error-handler";
 import { UnauthorizedError, ForbiddenError, ValidationError, NotFoundError, BadRequestError } from "@/lib/errors";
+import { deleteFile } from "@/lib/imagekit";
 
 export const GET = withErrorHandler(async (request: NextRequest, ctx) => {
   const user = await getAuthUser();
@@ -44,6 +45,16 @@ export const PATCH = withErrorHandler(async (request: NextRequest, ctx) => {
   const body = await request.json();
   const { action } = body;
 
+  const gallery = await galleryRepository.findById(id);
+  if (!gallery) throw new NotFoundError("Galeri tidak ditemukan");
+
+  // Partial update: cover image only
+  if (action === "set-cover") {
+    if (!hasPermission(user.role, "edit:gallery")) throw new ForbiddenError();
+    const updated = await galleryRepository.update(id, { coverImage: body.coverImage ?? null });
+    return ApiResponse.updated(updated, "Cover berhasil diperbarui");
+  }
+
   let newStatus: ContentStatus | null = null;
   if (action === "submit") newStatus = "PENDING_REVIEW";
   else if (action === "approve") {
@@ -55,6 +66,9 @@ export const PATCH = withErrorHandler(async (request: NextRequest, ctx) => {
   } else if (action === "publish") {
     if (!canPublish(user.role)) throw new ForbiddenError();
     newStatus = "PUBLISHED";
+  } else if (action === "unpublish") {
+    if (!canPublish(user.role)) throw new ForbiddenError();
+    newStatus = "DRAFT";
   }
 
   if (!newStatus) throw new BadRequestError("Aksi tidak valid");
@@ -69,6 +83,17 @@ export const DELETE = withErrorHandler(async (request: NextRequest, ctx) => {
   if (!user) throw new UnauthorizedError();
   if (!hasPermission(user.role, "delete:content")) throw new ForbiddenError();
   const { id } = await resolveParams(ctx);
+
+  const gallery = await galleryRepository.findById(id);
+  if (!gallery) throw new NotFoundError("Galeri tidak ditemukan");
+
+  // Delete all ImageKit files for items that have fileId stored
+  const itemsWithFileId = gallery.items.filter((item: any) => item.fileId);
+  await Promise.allSettled(
+    itemsWithFileId.map((item: any) => deleteFile(item.fileId))
+  );
+
   await galleryRepository.delete(id);
+  await createAuditLog({ userId: user.id, action: "DELETE", entityType: "Gallery", entityId: id });
   return ApiResponse.deleted("Galeri berhasil dihapus");
 });

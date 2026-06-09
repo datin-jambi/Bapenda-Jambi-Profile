@@ -37,7 +37,11 @@ export const PUT = withErrorHandler(async (request: NextRequest, ctx) => {
   }
 
   const slug = parsed.data.title !== news.title
-    ? slugify(parsed.data.title, { lower: true, strict: true })
+    ? await (async () => {
+        const base = slugify(parsed.data.title, { lower: true, strict: true });
+        const existing = await newsRepository.findBySlug(base);
+        return existing && existing.id !== id ? `${base}-${Date.now()}` : base;
+      })()
     : news.slug;
 
   const updated = await newsRepository.update(id, { ...parsed.data, slug });
@@ -55,6 +59,14 @@ export const PATCH = withErrorHandler(async (request: NextRequest, ctx) => {
 
   const news = await newsRepository.findById(id);
   if (!news) throw new NotFoundError("Berita tidak ditemukan");
+
+  // Partial update: thumbnail only
+  if (action === "set-thumbnail") {
+    const isOwner = news.author.id === user.id;
+    if (!hasPermission(user.role, "edit:news") && !isOwner) throw new ForbiddenError();
+    const updated = await newsRepository.update(id, { thumbnailUrl: body.thumbnailUrl ?? null });
+    return ApiResponse.updated(updated, "Thumbnail berhasil diperbarui");
+  }
 
   let newStatus: ContentStatus | null = null;
   if (action === "submit") newStatus = "PENDING_REVIEW";
