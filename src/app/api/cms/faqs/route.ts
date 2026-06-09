@@ -16,8 +16,12 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const categoryId = searchParams.get("categoryId")
     ? parseInt(searchParams.get("categoryId")!, 10)
     : undefined;
+  const search = searchParams.get("search") ?? undefined;
+  const publishedParam = searchParams.get("isPublished");
+  const isPublished =
+    publishedParam === "true" ? true : publishedParam === "false" ? false : undefined;
 
-  const { data, total } = await faqRepository.findAll({ skip, limit, categoryId });
+  const { data, total } = await faqRepository.findAll({ skip, limit, categoryId, isPublished, search });
   return ApiResponse.paginated(data, buildMeta(page, limit, total));
 });
 

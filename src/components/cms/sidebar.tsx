@@ -25,6 +25,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/cms/news", label: "Berita", icon: Newspaper, roles: ["Super_Admin", "Admin", "Editor", "Ketua_Uptd", "Admin_Uptd"] },
   { href: "/cms/galleries", label: "Galeri", icon: Images, roles: ["Super_Admin", "Admin", "Editor", "Ketua_Uptd", "Admin_Uptd"] },
   { href: "/cms/faqs", label: "FAQ", icon: HelpCircle, roles: ["Super_Admin", "Admin"] },
+  { href: "/cms/faq-categories", label: "Kategori FAQ", icon: ScrollText, roles: ["Super_Admin", "Admin"] },
   { href: "/cms/pages", label: "Halaman", icon: FileText, roles: ["Super_Admin", "Admin"] },
   { href: "/cms/regulations", label: "Regulasi", icon: Shield, roles: ["Super_Admin", "Admin"] },
   { href: "/cms/banners", label: "Banner", icon: Image, roles: ["Super_Admin", "Admin"] },

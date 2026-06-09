@@ -21,11 +21,12 @@ model User {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   deletedAt    DateTime?
-  auditLogs    AuditLog[]
-  faqs         Faq[]
-  galleries    Gallery[]
-  news         News[]
-  uptd         Uptd?      @relation(fields: [uptdId], references: [id])
+  auditLogs       AuditLog[]
+  faqsAuthored    Faq[]      @relation("FaqAuthor")
+  faqsUpdated     Faq[]      @relation("FaqUpdatedBy")
+  galleries       Gallery[]
+  news            News[]
+  uptd            Uptd?      @relation(fields: [uptdId], references: [id])
 
   @@map("users")
 }
@@ -129,12 +130,16 @@ model GalleryItem {
 }
 
 model FaqCategory {
-  id        Int       @id @default(autoincrement())
-  name      String
-  slug      String    @unique
-  createdAt DateTime  @default(now())
-  deletedAt DateTime?
-  faqs      Faq[]
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String    @unique
+  description String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  faqs        Faq[]
 
   @@map("faq_categories")
 }
@@ -143,16 +148,24 @@ model Faq {
   id          Int         @id @default(autoincrement())
   categoryId  Int
   authorId    Int
+  updatedById Int?
   question    String
+  slug        String      @unique
   answer      String
   sortOrder   Int         @default(0)
   isPublished Boolean     @default(false)
+  viewCount   Int         @default(0)
+  publishedAt DateTime?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   deletedAt   DateTime?
-  author      User        @relation(fields: [authorId], references: [id])
+  author      User        @relation("FaqAuthor", fields: [authorId], references: [id])
+  updatedBy   User?       @relation("FaqUpdatedBy", fields: [updatedById], references: [id])
   category    FaqCategory @relation(fields: [categoryId], references: [id])
 
+  @@index([slug])
+  @@index([categoryId])
+  @@index([isPublished])
   @@map("faqs")
 }
 

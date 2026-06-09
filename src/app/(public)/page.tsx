@@ -39,8 +39,8 @@ export default async function HomePage() {
     }),
     prisma.faq.findMany({
       where: { isPublished: true },
-      take: 6,
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+      take: 5,
+      orderBy: [{ viewCount: "desc" }, { sortOrder: "asc" }],
       include: { category: { select: { name: true } } },
     }),
   ]);

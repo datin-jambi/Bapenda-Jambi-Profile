@@ -65,9 +65,14 @@ export interface FaqListItem {
   id: number;
   question: string;
   answer: string;
+  slug: string;
   sortOrder: number;
   isPublished: boolean;
+  viewCount: number;
+  publishedAt: Date | null;
   category: { id: number; name: string; slug: string };
+  author: { id: number; name: string };
+  updatedBy: { id: number; name: string } | null;
 }
 
 // Settings

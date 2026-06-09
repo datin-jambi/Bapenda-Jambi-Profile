@@ -1,16 +1,30 @@
 import { prisma } from "@/lib/prisma";
+import { slugify } from "@/lib/utils";
 
 export const faqRepository = {
-  async findAll(params: { skip: number; limit: number; categoryId?: number; isPublished?: boolean }) {
+  async findAll(params: {
+    skip: number; limit: number;
+    categoryId?: number; isPublished?: boolean; search?: string;
+  }) {
     const where = {
       deletedAt: null,
       ...(params.categoryId && { categoryId: params.categoryId }),
       ...(params.isPublished !== undefined && { isPublished: params.isPublished }),
+      ...(params.search && {
+        OR: [
+          { question: { contains: params.search, mode: "insensitive" as const } },
+          { answer: { contains: params.search, mode: "insensitive" as const } },
+        ],
+      }),
     };
     const [data, total] = await Promise.all([
       prisma.faq.findMany({
         where, skip: params.skip, take: params.limit,
-        include: { category: { select: { id: true, name: true, slug: true } } },
+        include: {
+          category: { select: { id: true, name: true, slug: true } },
+          author: { select: { id: true, name: true } },
+          updatedBy: { select: { id: true, name: true } },
+        },
         orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
       }),
       prisma.faq.count({ where }),
@@ -21,22 +35,87 @@ export const faqRepository = {
   async findById(id: number) {
     return prisma.faq.findUnique({
       where: { id, deletedAt: null },
-      include: { category: true },
+      include: {
+        category: true,
+        author: { select: { id: true, name: true } },
+        updatedBy: { select: { id: true, name: true } },
+      },
     });
+  },
+
+  async findPublished(params: { search?: string; categoryId?: number }) {
+    const where = {
+      deletedAt: null,
+      isPublished: true,
+      ...(params.categoryId && { categoryId: params.categoryId }),
+      ...(params.search && {
+        OR: [
+          { question: { contains: params.search, mode: "insensitive" as const } },
+          { answer: { contains: params.search, mode: "insensitive" as const } },
+        ],
+      }),
+    };
+    return prisma.faq.findMany({
+      where,
+      include: { category: { select: { id: true, name: true, slug: true } } },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+    });
+  },
+
+  async findMostViewed(limit = 5) {
+    return prisma.faq.findMany({
+      where: { deletedAt: null, isPublished: true },
+      include: { category: { select: { id: true, name: true, slug: true } } },
+      orderBy: { viewCount: "desc" },
+      take: limit,
+    });
+  },
+
+  async incrementViewCount(id: number) {
+    return prisma.faq.update({ where: { id }, data: { viewCount: { increment: 1 } } });
+  },
+
+  async generateSlug(question: string): Promise<string> {
+    const base = slugify(question);
+    let slug = base;
+    let i = 1;
+    while (await prisma.faq.findFirst({ where: { slug, deletedAt: null } })) {
+      slug = `${base}-${i++}`;
+    }
+    return slug;
   },
 
   async create(data: {
     categoryId: number; authorId: number; question: string;
     answer: string; sortOrder?: number; isPublished?: boolean;
   }) {
-    return prisma.faq.create({ data });
+    const slug = await faqRepository.generateSlug(data.question);
+    return prisma.faq.create({
+      data: {
+        ...data,
+        slug,
+        publishedAt: data.isPublished ? new Date() : null,
+      },
+    });
   },
 
-  async update(id: number, data: Partial<{
+  async update(id: number, updatedById: number, data: Partial<{
     categoryId: number; question: string; answer: string;
     sortOrder: number; isPublished: boolean;
   }>) {
-    return prisma.faq.update({ where: { id }, data });
+    const current = await prisma.faq.findUnique({ where: { id } });
+    const wasPublished = current?.isPublished ?? false;
+    const isPublishing = data.isPublished === true && !wasPublished;
+
+    return prisma.faq.update({
+      where: { id },
+      data: {
+        ...data,
+        updatedById,
+        ...(isPublishing && { publishedAt: new Date() }),
+        ...(data.isPublished === false && { publishedAt: null }),
+      },
+    });
   },
 
   async delete(id: number) {

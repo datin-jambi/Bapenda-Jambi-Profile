@@ -306,20 +306,179 @@ async function main() {
 
   // Seed FAQ Categories
   const faqCategories = [
-    { name: "PKB (Pajak Kendaraan Bermotor)", slug: "pkb" },
-    { name: "BBNKB (Bea Balik Nama Kendaraan)", slug: "bbnkb" },
-    { name: "E-Samsat", slug: "e-samsat" },
-    { name: "Umum", slug: "umum" },
+    { name: "Pajak Kendaraan Bermotor (PKB)", slug: "pkb", description: "Pertanyaan seputar Pajak Kendaraan Bermotor", sortOrder: 1, isActive: true },
+    { name: "Bea Balik Nama Kendaraan (BBNKB)", slug: "bbnkb", description: "Pertanyaan seputar Bea Balik Nama Kendaraan Bermotor", sortOrder: 2, isActive: true },
+    { name: "E-Samsat", slug: "e-samsat", description: "Pertanyaan seputar layanan E-Samsat online", sortOrder: 3, isActive: true },
+    { name: "Pembayaran Pajak", slug: "pembayaran-pajak", description: "Pertanyaan seputar tata cara pembayaran pajak", sortOrder: 4, isActive: true },
+    { name: "UPTD Samsat", slug: "uptd-samsat", description: "Pertanyaan seputar kantor UPTD Samsat", sortOrder: 5, isActive: true },
+    { name: "Informasi Umum", slug: "informasi-umum", description: "Pertanyaan umum seputar layanan BAPENDA", sortOrder: 6, isActive: true },
   ];
 
   const createdFaqCategories: Record<string, number> = {};
   for (const cat of faqCategories) {
     const created = await prisma.faqCategory.upsert({
       where: { slug: cat.slug },
-      update: {},
+      update: { description: cat.description, sortOrder: cat.sortOrder, isActive: cat.isActive },
       create: cat,
     });
     createdFaqCategories[cat.slug] = created.id;
+  }
+
+  // Seed FAQ items
+  const adminUser = await prisma.user.findFirst({ where: { email: "admin@bapenda.jambiprov.go.id" } });
+  if (adminUser) {
+    const faqItems = [
+      // PKB
+      {
+        categorySlug: "pkb",
+        question: "Apa itu Pajak Kendaraan Bermotor (PKB)?",
+        slug: "apa-itu-pajak-kendaraan-bermotor-pkb",
+        answer: "Pajak Kendaraan Bermotor (PKB) adalah pajak atas kepemilikan dan/atau penguasaan kendaraan bermotor. PKB merupakan salah satu pajak daerah yang dikelola oleh Badan Pendapatan Daerah (BAPENDA) Provinsi Jambi.",
+        sortOrder: 1, isPublished: true,
+      },
+      {
+        categorySlug: "pkb",
+        question: "Kapan PKB harus dibayar?",
+        slug: "kapan-pkb-harus-dibayar",
+        answer: "PKB wajib dibayar setiap tahun sebelum tanggal jatuh tempo yang tertera pada Surat Tanda Nomor Kendaraan (STNK). Keterlambatan pembayaran akan dikenakan denda sebesar 2% per bulan dari pokok pajak.",
+        sortOrder: 2, isPublished: true,
+      },
+      {
+        categorySlug: "pkb",
+        question: "Apa saja dokumen yang dibutuhkan untuk membayar PKB tahunan?",
+        slug: "dokumen-pembayaran-pkb-tahunan",
+        answer: "Dokumen yang diperlukan untuk pembayaran PKB tahunan: STNK asli, KTP pemilik kendaraan, dan BPKB (untuk keperluan tertentu). Pastikan semua dokumen dalam kondisi lengkap dan masih berlaku.",
+        sortOrder: 3, isPublished: true,
+      },
+      {
+        categorySlug: "pkb",
+        question: "Berapa besaran denda keterlambatan pembayaran PKB?",
+        slug: "besaran-denda-keterlambatan-pkb",
+        answer: "Denda keterlambatan pembayaran PKB adalah sebesar 2% per bulan dari pokok pajak terutang, dihitung dari tanggal jatuh tempo. Denda maksimal adalah 48% atau setara 24 bulan keterlambatan.",
+        sortOrder: 4, isPublished: true,
+      },
+      // BBNKB
+      {
+        categorySlug: "bbnkb",
+        question: "Apa itu Bea Balik Nama Kendaraan Bermotor (BBNKB)?",
+        slug: "apa-itu-bbnkb",
+        answer: "Bea Balik Nama Kendaraan Bermotor (BBNKB) adalah pajak atas penyerahan hak milik kendaraan bermotor sebagai akibat perjanjian dua pihak atau perbuatan sepihak yang terjadi karena jual beli, tukar menukar, hibah, warisan, atau pemasukan ke dalam badan usaha.",
+        sortOrder: 1, isPublished: true,
+      },
+      {
+        categorySlug: "bbnkb",
+        question: "Berapa tarif BBNKB untuk kendaraan baru?",
+        slug: "tarif-bbnkb-kendaraan-baru",
+        answer: "Tarif BBNKB untuk penyerahan pertama (kendaraan baru) adalah sebesar 10% dari Nilai Jual Kendaraan Bermotor (NJKB). Untuk penyerahan kedua dan seterusnya (kendaraan bekas), tarifnya adalah 1% dari NJKB.",
+        sortOrder: 2, isPublished: true,
+      },
+      {
+        categorySlug: "bbnkb",
+        question: "Apa saja dokumen yang diperlukan untuk balik nama kendaraan?",
+        slug: "dokumen-balik-nama-kendaraan",
+        answer: "Dokumen yang diperlukan untuk proses balik nama kendaraan: BPKB asli dan fotokopi, STNK asli dan fotokopi, KTP pembeli (asli dan fotokopi), kwitansi jual beli bermaterai, hasil cek fisik kendaraan, dan surat kuasa apabila dikuasakan.",
+        sortOrder: 3, isPublished: true,
+      },
+      // E-Samsat
+      {
+        categorySlug: "e-samsat",
+        question: "Apa itu E-Samsat Jambi?",
+        slug: "apa-itu-e-samsat-jambi",
+        answer: "E-Samsat Jambi adalah layanan pembayaran Pajak Kendaraan Bermotor (PKB) secara online yang dapat dilakukan melalui aplikasi mobile banking, internet banking, atau kanal pembayaran digital yang telah bekerja sama dengan BAPENDA Provinsi Jambi.",
+        sortOrder: 1, isPublished: true,
+      },
+      {
+        categorySlug: "e-samsat",
+        question: "Bank apa saja yang melayani pembayaran E-Samsat?",
+        slug: "bank-pembayaran-e-samsat",
+        answer: "Pembayaran PKB melalui E-Samsat dapat dilakukan melalui Bank Jambi, BRI, BNI, Mandiri, dan BCA. Selain itu juga tersedia melalui Indomaret, Alfamart, dan dompet digital seperti GoPay dan OVO.",
+        sortOrder: 2, isPublished: true,
+      },
+      {
+        categorySlug: "e-samsat",
+        question: "Apakah perlu ke kantor Samsat setelah bayar melalui E-Samsat?",
+        slug: "perlu-ke-samsat-setelah-bayar-e-samsat",
+        answer: "Untuk pembayaran PKB tahunan melalui E-Samsat, Anda tidak perlu datang ke kantor Samsat. Namun untuk perpanjangan STNK 5 tahunan yang memerlukan penggantian plat nomor dan pengesahan STNK baru, Anda tetap harus datang ke kantor Samsat terdekat.",
+        sortOrder: 3, isPublished: true,
+      },
+      // Pembayaran Pajak
+      {
+        categorySlug: "pembayaran-pajak",
+        question: "Di mana saja saya bisa membayar pajak kendaraan?",
+        slug: "tempat-pembayaran-pajak-kendaraan",
+        answer: "Pembayaran pajak kendaraan dapat dilakukan di kantor UPTD Samsat di seluruh Kabupaten/Kota Provinsi Jambi, Samsat Keliling yang beroperasi di berbagai lokasi strategis, layanan E-Samsat secara online, dan gerai Samsat di pusat perbelanjaan.",
+        sortOrder: 1, isPublished: true,
+      },
+      {
+        categorySlug: "pembayaran-pajak",
+        question: "Bagaimana cara menghitung besaran pajak kendaraan saya?",
+        slug: "cara-menghitung-pajak-kendaraan",
+        answer: "Besaran PKB dihitung berdasarkan rumus: PKB = Tarif PKB x NJKB x Bobot. Tarif PKB untuk kendaraan pribadi adalah 1,5% dari NJKB. NJKB ditetapkan berdasarkan Peraturan Menteri Dalam Negeri dan disesuaikan setiap tahun. Anda juga dapat melihat besaran pajak yang tertera pada lembar STNK kendaraan.",
+        sortOrder: 2, isPublished: true,
+      },
+      // UPTD Samsat
+      {
+        categorySlug: "uptd-samsat",
+        question: "Di mana saja lokasi kantor UPTD Samsat di Provinsi Jambi?",
+        slug: "lokasi-uptd-samsat-provinsi-jambi",
+        answer: "UPTD Samsat tersebar di seluruh Kabupaten/Kota Provinsi Jambi, meliputi: Samsat Kota Jambi, Muaro Jambi, Batanghari, Muara Bungo, Tebo, Sarolangun, Merangin, Kerinci, Tanjung Jabung Barat, Tanjung Jabung Timur, dan Sungai Penuh.",
+        sortOrder: 1, isPublished: true,
+      },
+      {
+        categorySlug: "uptd-samsat",
+        question: "Berapa jam operasional kantor Samsat?",
+        slug: "jam-operasional-kantor-samsat",
+        answer: "Kantor UPTD Samsat melayani pada hari kerja Senin hingga Kamis pukul 08.00 sampai 15.00 WIB, dan Jumat pukul 08.00 sampai 11.30 WIB. Tutup pada hari Sabtu, Minggu, dan hari libur nasional.",
+        sortOrder: 2, isPublished: true,
+      },
+      // Informasi Umum
+      {
+        categorySlug: "informasi-umum",
+        question: "Apa itu BAPENDA Provinsi Jambi?",
+        slug: "apa-itu-bapenda-provinsi-jambi",
+        answer: "Badan Pendapatan Daerah (BAPENDA) Provinsi Jambi adalah perangkat daerah yang bertugas mengelola dan mengoptimalkan pendapatan daerah Provinsi Jambi, khususnya dari sektor pajak daerah seperti PKB, BBNKB, Pajak Air Permukaan, dan pajak daerah lainnya.",
+        sortOrder: 1, isPublished: true,
+      },
+      {
+        categorySlug: "informasi-umum",
+        question: "Bagaimana cara menghubungi BAPENDA Provinsi Jambi?",
+        slug: "cara-menghubungi-bapenda-jambi",
+        answer: "Anda dapat menghubungi BAPENDA Provinsi Jambi melalui telepon (0741) 60436, email info@bapenda.jambiprov.go.id, atau datang langsung ke Jl. Ahmad Yani No. 1, Kota Jambi 36122.",
+        sortOrder: 2, isPublished: true,
+      },
+      {
+        categorySlug: "informasi-umum",
+        question: "Apa saja jenis pajak daerah yang dikelola BAPENDA Jambi?",
+        slug: "jenis-pajak-daerah-bapenda-jambi",
+        answer: "BAPENDA Provinsi Jambi mengelola beberapa jenis pajak daerah, antara lain: Pajak Kendaraan Bermotor (PKB), Bea Balik Nama Kendaraan Bermotor (BBNKB), Pajak Bahan Bakar Kendaraan Bermotor (PBBKB), Pajak Air Permukaan, dan Pajak Rokok.",
+        sortOrder: 3, isPublished: true,
+      },
+    ];
+
+    for (const item of faqItems) {
+      const catId = createdFaqCategories[item.categorySlug];
+      if (!catId) continue;
+      await prisma.faq.upsert({
+        where: { slug: item.slug },
+        update: {
+          question: item.question,
+          answer: item.answer,
+          sortOrder: item.sortOrder,
+          isPublished: item.isPublished,
+        },
+        create: {
+          categoryId: catId,
+          authorId: adminUser.id,
+          question: item.question,
+          slug: item.slug,
+          answer: item.answer,
+          sortOrder: item.sortOrder,
+          isPublished: item.isPublished,
+          publishedAt: item.isPublished ? new Date() : null,
+        },
+      });
+    }
+    console.log("FAQ items seeded.");
   }
 
   // Seed Pages
@@ -521,54 +680,6 @@ async function main() {
     });
   }
 
-  // Seed Demo FAQs
-  const faqs = [
-    {
-      question: "Apa itu Pajak Kendaraan Bermotor (PKB)?",
-      answer: "Pajak Kendaraan Bermotor (PKB) adalah pajak atas kepemilikan dan/atau penguasaan kendaraan bermotor. PKB merupakan salah satu pajak daerah yang dikelola oleh BAPENDA Provinsi Jambi.",
-      categorySlug: "pkb",
-      sortOrder: 1,
-    },
-    {
-      question: "Bagaimana cara membayar PKB melalui E-Samsat?",
-      answer: "Untuk membayar PKB melalui E-Samsat: 1) Kunjungi website E-Samsat atau unduh aplikasinya. 2) Masukkan nomor polisi kendaraan Anda. 3) Periksa data kendaraan dan jumlah pajak. 4) Pilih metode pembayaran. 5) Lakukan pembayaran. 6) Simpan bukti pembayaran.",
-      categorySlug: "e-samsat",
-      sortOrder: 1,
-    },
-    {
-      question: "Apa yang dimaksud dengan BBNKB?",
-      answer: "Bea Balik Nama Kendaraan Bermotor (BBNKB) adalah pajak atas penyerahan hak milik kendaraan bermotor sebagai akibat perjanjian dua pihak atau perbuatan sepihak atau keadaan yang terjadi karena jual beli, tukar menukar, hibah, warisan, atau pemasukan ke dalam badan usaha.",
-      categorySlug: "bbnkb",
-      sortOrder: 1,
-    },
-    {
-      question: "Dimana saya bisa membayar pajak kendaraan?",
-      answer: "Pajak kendaraan dapat dibayar di: 1) Kantor Samsat terdekat. 2) Samsat Keliling yang beroperasi di berbagai lokasi. 3) Layanan E-Samsat secara online. 4) Bank-bank yang telah bekerja sama dengan BAPENDA.",
-      categorySlug: "umum",
-      sortOrder: 1,
-    },
-    {
-      question: "Apa dokumen yang diperlukan untuk balik nama kendaraan?",
-      answer: "Dokumen yang diperlukan: 1) KTP asli pemilik baru beserta fotokopi. 2) BPKB asli beserta fotokopi. 3) STNK asli beserta fotokopi. 4) Kuitansi pembelian bermaterai. 5) Hasil cek fisik kendaraan.",
-      categorySlug: "bbnkb",
-      sortOrder: 2,
-    },
-  ];
-
-  for (const faq of faqs) {
-    const categoryId = createdFaqCategories[faq.categorySlug];
-    if (!categoryId) continue;
-    await prisma.faq.create({
-      data: {
-        categoryId,
-        authorId: editor.id,
-        question: faq.question,
-        answer: faq.answer,
-        sortOrder: faq.sortOrder,
-        isPublished: true,
-      },
-    }).catch(() => { });
-  }
 
   // Seed Demo Gallery
   const gallery = await prisma.gallery.create({

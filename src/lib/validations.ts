@@ -75,11 +75,19 @@ export const faqCategorySchema = z.object({
 });
 
 export const faqSchema = z.object({
-  categoryId: z.number().int("Pilih kategori"),
-  question: z.string().min(5, "Pertanyaan minimal 5 karakter"),
+  categoryId: z.coerce.number().int("Pilih kategori").min(1, "Pilih kategori"),
+  question: z.string().min(5, "Pertanyaan minimal 5 karakter").max(500, "Pertanyaan maksimal 500 karakter"),
   answer: z.string().min(10, "Jawaban minimal 10 karakter"),
-  sortOrder: z.number().int().min(0).optional(),
-  isPublished: z.boolean().optional(),
+  sortOrder: z.coerce.number().int().min(0).optional().default(0),
+  isPublished: z.boolean().optional().default(false),
+});
+
+export const faqCategoryCreateSchema = z.object({
+  name: z.string().min(2, "Nama kategori minimal 2 karakter"),
+  slug: z.string().optional(),
+  description: z.string().optional().nullable(),
+  sortOrder: z.coerce.number().int().min(0).optional().default(0),
+  isActive: z.boolean().optional().default(true),
 });
 
 export const pageSchema = z.object({
@@ -154,6 +162,7 @@ export type NewsInput = z.infer<typeof newsSchema>;
 export type GalleryInput = z.infer<typeof gallerySchema>;
 export type GalleryItemInput = z.infer<typeof galleryItemSchema>;
 export type FaqInput = z.infer<typeof faqSchema>;
+export type FaqCategoryCreateInput = z.infer<typeof faqCategoryCreateSchema>;
 export type PageInput = z.infer<typeof pageSchema>;
 export type BannerInput = z.infer<typeof bannerSchema>;
 export type RegulationInput = z.infer<typeof regulationSchema>;

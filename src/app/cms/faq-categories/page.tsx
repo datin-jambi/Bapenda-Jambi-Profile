@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import api from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Plus, Pencil, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -17,27 +18,23 @@ import { DataTable, ColumnDef } from "@/components/cms/data-table";
 import { DataTablePagination } from "@/components/cms/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
 
-type FaqCategory = { id: number; name: string; slug: string };
-
-type FaqItem = {
+type FaqCategoryItem = {
   id: number;
-  question: string;
+  name: string;
   slug: string;
-  isPublished: boolean;
-  viewCount: number;
+  description: string | null;
   sortOrder: number;
-  publishedAt: string | null;
+  isActive: boolean;
   createdAt: string;
-  category: FaqCategory;
-  author: { id: number; name: string };
+  _count: { faqs: number };
 };
 
-type FaqResponse = {
-  data: FaqItem[];
+type CategoryResponse = {
+  data: FaqCategoryItem[];
   meta: { page: number; limit: number; totalItems: number; totalPages: number };
 };
 
-export default function CmsFaqsPage() {
+export default function CmsFaqCategoriesPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -45,11 +42,10 @@ export default function CmsFaqsPage() {
   const searchParams = useSearchParams();
 
   const [searchInput, setSearchInput] = useState(searchParams.get("search") ?? "");
-  const [categoryFilter, setCategoryFilter] = useState(searchParams.get("categoryId") ?? "all");
-  const [publishedFilter, setPublishedFilter] = useState(searchParams.get("isPublished") ?? "all");
+  const [activeFilter, setActiveFilter] = useState(searchParams.get("isActive") ?? "all");
   const [page, setPage] = useState(Number(searchParams.get("page") ?? 1));
   const [pageSize, setPageSize] = useState(Number(searchParams.get("limit") ?? 10));
-  const [deleteTarget, setDeleteTarget] = useState<FaqItem | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<FaqCategoryItem | null>(null);
 
   const debouncedSearch = useDebounce(searchInput, 2000);
   const isSearching = searchInput !== debouncedSearch;
@@ -72,50 +68,38 @@ export default function CmsFaqsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
-  const { data: categoriesData } = useQuery<FaqCategory[]>({
-    queryKey: ["faq-categories"],
-    queryFn: () => api.get("/cms/faq-categories?limit=100").then((r) => r.data.data),
-  });
-
-  const { data, isLoading } = useQuery<FaqResponse>({
-    queryKey: ["cms-faqs", page, pageSize, debouncedSearch, categoryFilter, publishedFilter],
+  const { data, isLoading } = useQuery<CategoryResponse>({
+    queryKey: ["cms-faq-categories-list", page, pageSize, debouncedSearch, activeFilter],
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
       params.set("limit", String(pageSize));
       if (debouncedSearch) params.set("search", debouncedSearch);
-      if (categoryFilter !== "all") params.set("categoryId", categoryFilter);
-      if (publishedFilter !== "all") params.set("isPublished", publishedFilter);
-      return api.get(`/cms/faqs?${params.toString()}`).then((r) => r.data);
+      if (activeFilter !== "all") params.set("isActive", activeFilter);
+      return api.get(`/cms/faq-categories?${params.toString()}`).then((r) => r.data);
     },
   });
 
-  const faqs = data?.data ?? [];
+  const categories = data?.data ?? [];
   const meta = data?.meta;
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.delete(`/cms/faqs/${id}`),
+    mutationFn: (id: number) => api.delete(`/cms/faq-categories/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-faqs"] });
       queryClient.invalidateQueries({ queryKey: ["cms-faq-categories-list"] });
       queryClient.invalidateQueries({ queryKey: ["faq-categories"] });
-      toast.success("FAQ berhasil dihapus");
+      queryClient.invalidateQueries({ queryKey: ["cms-faqs"] });
+      toast.success("Kategori berhasil dihapus");
       setDeleteTarget(null);
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
-      toast.error(err.response?.data?.message || "Gagal menghapus FAQ"),
+      toast.error(err.response?.data?.message || "Gagal menghapus kategori"),
   });
 
-  function handleCategoryFilter(val: string) {
-    setCategoryFilter(val);
+  function handleActiveFilter(val: string) {
+    setActiveFilter(val);
     setPage(1);
-    pushParams({ categoryId: val, page: "1" });
-  }
-
-  function handlePublishedFilter(val: string) {
-    setPublishedFilter(val);
-    setPage(1);
-    pushParams({ isPublished: val, page: "1" });
+    pushParams({ isActive: val, page: "1" });
   }
 
   function handlePageChange(p: number) {
@@ -131,62 +115,61 @@ export default function CmsFaqsPage() {
 
   function handleReset() {
     setSearchInput("");
-    setCategoryFilter("all");
-    setPublishedFilter("all");
+    setActiveFilter("all");
     setPage(1);
     router.replace(pathname, { scroll: false });
   }
 
   const canManage = user?.role === "Super_Admin" || user?.role === "Admin";
 
-  const columns: ColumnDef<FaqItem>[] = [
+  const columns: ColumnDef<FaqCategoryItem>[] = [
     {
-      key: "question",
-      header: "Pertanyaan",
-      cellClassName: "font-medium max-w-xs",
+      key: "name",
+      header: "Nama Kategori",
+      cellClassName: "font-medium",
       render: (item) => (
-        <span className="line-clamp-2 text-sm" title={item.question}>
-          {item.question}
-        </span>
+        <div>
+          <p className="font-medium text-sm">{item.name}</p>
+          {item.description && (
+            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{item.description}</p>
+          )}
+        </div>
       ),
     },
     {
-      key: "category",
-      header: "Kategori",
-      render: (item) => <Badge variant="outline">{item.category?.name}</Badge>,
+      key: "slug",
+      header: "Slug",
+      cellClassName: "text-sm text-muted-foreground font-mono",
+      render: (item) => item.slug,
+    },
+    {
+      key: "faqs",
+      header: "Total FAQ",
+      headerClassName: "text-center",
+      cellClassName: "text-center",
+      render: (item) => (
+        <Badge variant="secondary">{item._count.faqs} FAQ</Badge>
+      ),
     },
     {
       key: "status",
-      header: "Status Publish",
+      header: "Status",
       render: (item) => (
-        <Badge variant={item.isPublished ? "success" : "outline"}>
-          {item.isPublished ? "Dipublikasi" : "Draft"}
+        <Badge variant={item.isActive ? "success" : "outline"}>
+          {item.isActive ? "Aktif" : "Nonaktif"}
         </Badge>
       ),
     },
     {
-      key: "viewCount",
-      header: "Total View",
-      cellClassName: "text-sm text-muted-foreground text-center",
-      headerClassName: "text-center",
-      render: (item) => item.viewCount,
-    },
-    {
       key: "sortOrder",
       header: "Urutan",
-      cellClassName: "text-sm text-muted-foreground text-center",
       headerClassName: "text-center",
+      cellClassName: "text-center text-sm text-muted-foreground",
       render: (item) => item.sortOrder,
     },
     {
-      key: "author",
-      header: "Dibuat Oleh",
-      cellClassName: "text-sm text-muted-foreground",
-      render: (item) => item.author?.name ?? "-",
-    },
-    {
       key: "createdAt",
-      header: "Tanggal Dibuat",
+      header: "Dibuat",
       cellClassName: "text-sm text-muted-foreground",
       render: (item) => formatDate(item.createdAt),
     },
@@ -198,35 +181,50 @@ export default function CmsFaqsPage() {
       render: (item) => (
         <div className="flex items-center justify-end gap-1">
           <Button size="sm" variant="ghost" asChild title="Detail">
-            <Link href={`/cms/faqs/${item.id}`}><Eye className="h-3 w-3" /></Link>
+            <Link href={`/cms/faq-categories/${item.id}`}><Eye className="h-3 w-3" /></Link>
           </Button>
           {canManage && (
             <Button size="sm" variant="ghost" asChild title="Edit">
-              <Link href={`/cms/faqs/${item.id}/edit`}><Pencil className="h-3 w-3" /></Link>
+              <Link href={`/cms/faq-categories/${item.id}/edit`}><Pencil className="h-3 w-3" /></Link>
             </Button>
           )}
           {canManage && (
-            <Button size="sm" variant="destructive" title="Hapus" onClick={() => setDeleteTarget(item)}>
-              <Trash2 className="h-3 w-3" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span>
+                    <Button
+                      size="sm" variant="destructive" title="Hapus"
+                      onClick={() => setDeleteTarget(item)}
+                      disabled={item._count.faqs > 0}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                {item._count.faqs > 0 && (
+                  <TooltipContent>
+                    <p>Tidak dapat dihapus — masih digunakan oleh {item._count.faqs} FAQ</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
       ),
     },
   ];
 
-  const categoryOptions = (categoriesData ?? []).map((c) => ({ label: c.name, value: String(c.id) }));
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-primary">Manajemen FAQ</h1>
-          <p className="text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan</p>
+          <h1 className="text-2xl font-bold text-primary">Kategori FAQ</h1>
+          <p className="text-sm text-muted-foreground">Kelola kategori untuk pertanyaan yang sering diajukan</p>
         </div>
         {canManage && (
           <Button asChild>
-            <Link href="/cms/faqs/create"><Plus className="mr-2 h-4 w-4" />Tambah FAQ</Link>
+            <Link href="/cms/faq-categories/create"><Plus className="mr-2 h-4 w-4" />Tambah Kategori</Link>
           </Button>
         )}
       </div>
@@ -234,35 +232,28 @@ export default function CmsFaqsPage() {
       <DataTableFilter
         value={searchInput}
         onChange={setSearchInput}
-        placeholder="Cari pertanyaan..."
+        placeholder="Cari nama kategori..."
         isSearching={isSearching}
         onReset={handleReset}
         selects={[
           {
-            value: categoryFilter,
-            onChange: handleCategoryFilter,
-            placeholder: "Kategori",
-            allLabel: "Semua Kategori",
-            options: categoryOptions,
-          },
-          {
-            value: publishedFilter,
-            onChange: handlePublishedFilter,
+            value: activeFilter,
+            onChange: handleActiveFilter,
             placeholder: "Status",
             allLabel: "Semua Status",
             options: [
-              { label: "Dipublikasi", value: "true" },
-              { label: "Draft", value: "false" },
+              { label: "Aktif", value: "true" },
+              { label: "Nonaktif", value: "false" },
             ],
           },
         ]}
       />
 
       <DataTable
-        data={faqs}
+        data={categories}
         columns={columns}
         isLoading={isLoading || isSearching}
-        emptyMessage="Belum ada FAQ"
+        emptyMessage="Belum ada kategori FAQ"
       />
 
       <DataTablePagination
@@ -277,8 +268,8 @@ export default function CmsFaqsPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(v) => { if (!v) setDeleteTarget(null); }}
-        title="Hapus FAQ"
-        description={`FAQ "${deleteTarget?.question}" akan dihapus secara permanen. Lanjutkan?`}
+        title="Hapus Kategori FAQ"
+        description={`Kategori "${deleteTarget?.name}" akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.`}
         confirmLabel="Ya, Hapus"
         loading={deleteMutation.isPending}
         onConfirm={() => {
