@@ -109,7 +109,7 @@ export function FaqPageClient({
   }
 
   async function handleView(id: number) {
-    await fetch(`/api/public/faqs/${id}/view`, { method: "POST" }).catch(() => {});
+    await fetch(`/api/public/faqs/${id}/view`, { method: "POST" }).catch(() => { });
   }
 
   const mostViewed = [...initialFaqs]
@@ -230,7 +230,7 @@ export function FaqPageClient({
               <div key={faq.id}>
                 <FaqAccordionItem faq={faq} onOpen={handleView} />
                 <div className="mt-1 ml-1">
-                  <Badge variant="outline" className="text-xs">{faq.category.name}</Badge>
+                  <Badge variant="secondary" className="text-xs">{faq.category.name}</Badge>
                 </div>
               </div>
             ))}

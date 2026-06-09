@@ -68,7 +68,7 @@ export function HeroSection({ banners }: { banners: Banner[] }) {
                   <p className="text-lg text-white/90 mb-8 leading-relaxed">{banner.description}</p>
                 )}
                 {banner.buttonText && banner.buttonUrl && (
-                  <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-white font-semibold" asChild>
+                  <Button variant="warning" className="text-gray-800" size="lg" asChild>
                     <Link href={banner.buttonUrl}>{banner.buttonText}</Link>
                   </Button>
                 )}

@@ -21,7 +21,7 @@ export function GallerySection({ galleries }: { galleries: GalleryItem[] }) {
             <h2 className="text-2xl md:text-3xl font-bold font-poppins text-primary">Galeri</h2>
             <p className="text-gray-500 mt-1">Dokumentasi kegiatan BAPENDA Provinsi Jambi</p>
           </div>
-          <Button variant="outline" asChild className="hidden sm:flex">
+          <Button variant="warning" asChild className="hidden sm:flex text-gray-800">
             <Link href="/galeri">Lihat Semua <ArrowRight className="ml-2 h-4 w-4" /></Link>
           </Button>
         </div>
@@ -48,7 +48,7 @@ export function GallerySection({ galleries }: { galleries: GalleryItem[] }) {
         </div>
 
         <div className="mt-6 text-center sm:hidden">
-          <Button variant="outline" asChild>
+          <Button variant="warning" className="text-gray-800" asChild>
             <Link href="/galeri">Lihat Semua Galeri <ArrowRight className="ml-2 h-4 w-4" /></Link>
           </Button>
         </div>

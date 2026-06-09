@@ -35,7 +35,7 @@ export function FaqSection({ faqs }: { faqs: FaqItem[] }) {
               Temukan jawaban cepat seputar layanan BAPENDA Provinsi Jambi
             </p>
           </div>
-          <Button variant="outline" asChild className="hidden sm:flex items-center gap-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors">
+          <Button variant="warning" asChild className="hidden sm:flex items-center gap-2 text-gray-800">
             <Link href="/faq">
               Lihat Semua <ArrowRight className="h-4 w-4" />
             </Link>
@@ -90,7 +90,7 @@ export function FaqSection({ faqs }: { faqs: FaqItem[] }) {
                       {faq.answer}
                     </p>
                     <div className="mt-3 flex items-center justify-between">
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="secondary" className="text-xs">
                         {faq.category?.name}
                       </Badge>
                     </div>

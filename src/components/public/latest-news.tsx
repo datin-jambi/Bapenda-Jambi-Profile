@@ -30,7 +30,7 @@ export function LatestNewsSection({ news }: { news: NewsItem[] }) {
             <h2 className="text-2xl md:text-3xl font-bold font-poppins text-primary">Berita Terbaru</h2>
             <p className="text-gray-500 mt-1">Informasi dan berita terkini dari BAPENDA</p>
           </div>
-          <Button variant="outline" asChild className="hidden sm:flex">
+          <Button variant="warning" asChild className="hidden sm:flex text-gray-800">
             <Link href="/berita">Lihat Semua <ArrowRight className="ml-2 h-4 w-4" /></Link>
           </Button>
         </div>
@@ -43,7 +43,7 @@ export function LatestNewsSection({ news }: { news: NewsItem[] }) {
                 <FallbackImage src={featured.thumbnailUrl} alt={featured.title} fallback="news" fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <Badge className="bg-secondary text-white mb-2">{featured.category.name}</Badge>
+                  <Badge variant="info" className="mb-2">{featured.category.name}</Badge>
                   <h3 className="text-white font-bold text-lg leading-snug group-hover:text-secondary transition-colors">
                     {featured.title}
                   </h3>
