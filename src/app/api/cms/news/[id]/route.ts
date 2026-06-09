@@ -8,6 +8,7 @@ import { ContentStatus } from "@prisma/client";
 import { hasPermission, canPublish } from "@/types";
 import { withErrorHandler, resolveParams } from "@/lib/with-error-handler";
 import { UnauthorizedError, ForbiddenError, ValidationError, NotFoundError, BadRequestError } from "@/lib/errors";
+import { safeDeleteFile } from "@/lib/upload-helpers";
 import slugify from "slugify";
 
 export const GET = withErrorHandler(async (request: NextRequest, ctx) => {
@@ -44,6 +45,12 @@ export const PUT = withErrorHandler(async (request: NextRequest, ctx) => {
       })()
     : news.slug;
 
+  // Delete old thumbnail from ImageKit if replaced
+  const newThumbnailUrl = parsed.data.thumbnailUrl ?? null;
+  if (body.oldThumbnailFileId && newThumbnailUrl !== news.thumbnailUrl) {
+    await safeDeleteFile(body.oldThumbnailFileId);
+  }
+
   const updated = await newsRepository.update(id, { ...parsed.data, slug });
   await createAuditLog({ userId: user.id, action: "UPDATE", entityType: "News", entityId: id, oldData: news, newData: updated });
   return ApiResponse.updated(updated, "Berita berhasil diperbarui");
@@ -60,7 +67,6 @@ export const PATCH = withErrorHandler(async (request: NextRequest, ctx) => {
   const news = await newsRepository.findById(id);
   if (!news) throw new NotFoundError("Berita tidak ditemukan");
 
-  // Partial update: thumbnail only
   if (action === "set-thumbnail") {
     const isOwner = news.author.id === user.id;
     if (!hasPermission(user.role, "edit:news") && !isOwner) throw new ForbiddenError();

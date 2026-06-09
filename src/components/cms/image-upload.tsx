@@ -11,11 +11,21 @@ interface ImageUploadProps {
   value: string;
   onChange: (url: string, fileId?: string) => void;
   folder?: string;
+  module?: string;
+  label?: string;
   accept?: string;
   disabled?: boolean;
 }
 
-export function ImageUpload({ value, onChange, folder = "/bapenda/uploads", accept = "image/*", disabled = false }: ImageUploadProps) {
+export function ImageUpload({
+  value,
+  onChange,
+  folder = "/uploads",
+  module = "file",
+  label,
+  accept = "image/*",
+  disabled = false,
+}: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -32,6 +42,8 @@ export function ImageUpload({ value, onChange, folder = "/bapenda/uploads", acce
       const formData = new FormData();
       formData.append("file", file);
       formData.append("folder", folder);
+      formData.append("module", module);
+      formData.append("label", label || file.name);
 
       const res = await api.post("/upload/image", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -42,9 +54,12 @@ export function ImageUpload({ value, onChange, folder = "/bapenda/uploads", acce
 
       onChange(result.url, result.fileId);
       toast.success("Gambar berhasil diupload");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[ImageUpload] error:", err);
-      const msg = err.response?.data?.message || err.message || "Gagal mengupload gambar";
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        (err as Error)?.message ||
+        "Gagal mengupload gambar";
       toast.error(msg);
     } finally {
       setUploading(false);

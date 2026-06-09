@@ -88,7 +88,7 @@ export default function EditGalleryPage() {
         formData.append("expire", expire);
         formData.append("token", token);
         formData.append("fileName", file.name);
-        formData.append("folder", "/bapenda/gallery");
+        formData.append("folder", "/gallery");
         const res = await fetch("https://upload.imagekit.io/api/v1/files/upload", { method: "POST", body: formData });
         if (!res.ok) throw new Error("Upload gagal");
         const result = await res.json();
@@ -162,7 +162,7 @@ export default function EditGalleryPage() {
                     toast.error("Gagal menyimpan cover");
                   }
                 }}
-                folder="/bapenda/gallery"
+                folder="/gallery"
               />
             </div>
           </CardContent>

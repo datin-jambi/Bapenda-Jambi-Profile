@@ -1,10 +1,13 @@
 import { NextRequest } from "next/server";
 import { getAuthUser } from "@/lib/auth";
 import { uploadFile } from "@/lib/imagekit";
+import { buildImageFileName } from "@/lib/upload-helpers";
 import { ApiResponse } from "@/lib/api-response";
 import { withErrorHandler } from "@/lib/with-error-handler";
 import { UnauthorizedError, ValidationError } from "@/lib/errors";
-import { MediaFolderPath } from "@/lib/media-folders";
+import { MediaFolderPath, MediaFolder } from "@/lib/media-folders";
+
+const VALID_FOLDERS = new Set<string>(Object.values(MediaFolder));
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
   const user = await getAuthUser();
@@ -12,7 +15,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
   const formData = await request.formData();
   const file = formData.get("file") as File | null;
-  const folder = (formData.get("folder") as string) || "/bapenda/uploads";
+  const folderRaw = (formData.get("folder") as string) || MediaFolder.PROFILE;
+  const module = (formData.get("module") as string) || "";
+  const label = (formData.get("label") as string) || "";
 
   if (!file) throw new ValidationError("File wajib diisi");
 
@@ -24,8 +29,18 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     throw new ValidationError("Tipe file tidak didukung. Gunakan JPG, PNG, WEBP, atau GIF");
   }
 
+  // Resolve folder — accept both valid MediaFolderPath and shorthand like "/banners"
+  const folder: MediaFolderPath = VALID_FOLDERS.has(folderRaw)
+    ? (folderRaw as MediaFolderPath)
+    : MediaFolder.PROFILE;
+
+  // Use slug-based name when module+label provided, otherwise fall back to original filename
+  const fileName = module && label
+    ? buildImageFileName(module, label)
+    : file.name;
+
   const buffer = Buffer.from(await file.arrayBuffer());
-  const result = await uploadFile(buffer, file.name, folder as MediaFolderPath);
+  const result = await uploadFile(buffer, fileName, folder);
 
   return ApiResponse.created(result, "Gambar berhasil diupload");
 });

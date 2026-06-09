@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import api from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,6 @@ const STATUS_LABELS: Record<string, string> = {
 
 export default function EditNewsPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
 
@@ -51,6 +50,7 @@ export default function EditNewsPage() {
   });
 
   const thumbnailUrl = watch("thumbnailUrl");
+  const titleValue = watch("title");
 
   useEffect(() => {
     if (newsData) {
@@ -68,8 +68,12 @@ export default function EditNewsPage() {
 
   const updateMutation = useMutation({
     mutationFn: (data: NewsInput) => api.put(`/cms/news/${id}`, data),
-    onSuccess: () => { toast.success("Berita berhasil diperbarui"); queryClient.invalidateQueries({ queryKey: ["cms-news-detail", id] }); },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal menyimpan"),
+    onSuccess: () => {
+      toast.success("Berita berhasil diperbarui");
+      queryClient.invalidateQueries({ queryKey: ["cms-news-detail", id] });
+    },
+    onError: (err: { response?: { data?: { message?: string } } }) =>
+      toast.error(err.response?.data?.message || "Gagal menyimpan"),
   });
 
   const actionMutation = useMutation({
@@ -77,10 +81,14 @@ export default function EditNewsPage() {
     onSuccess: (_, action) => {
       queryClient.invalidateQueries({ queryKey: ["cms-news-detail", id] });
       queryClient.invalidateQueries({ queryKey: ["cms-news"] });
-      const msgs: Record<string, string> = { submit: "Dikirim untuk review", approve: "Disetujui", reject: "Ditolak", publish: "Dipublikasi", unpublish: "Dibatalkan" };
+      const msgs: Record<string, string> = {
+        submit: "Dikirim untuk review", approve: "Disetujui", reject: "Ditolak",
+        publish: "Dipublikasi", unpublish: "Dibatalkan",
+      };
       toast.success(msgs[action] || "Berhasil");
     },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal"),
+    onError: (err: { response?: { data?: { message?: string } } }) =>
+      toast.error(err.response?.data?.message || "Gagal"),
   });
 
   if (isLoading) return (
@@ -109,27 +117,32 @@ export default function EditNewsPage() {
         </div>
         <div className="flex gap-2">
           {status === "DRAFT" && (
-            <Button variant="secondary" size="sm" loading={actionMutation.isPending} onClick={() => actionMutation.mutate("submit")}>
+            <Button variant="secondary" size="sm" loading={actionMutation.isPending}
+              onClick={() => actionMutation.mutate("submit")}>
               <Send className="mr-1 h-3 w-3" />Kirim Review
             </Button>
           )}
           {isAdmin && status === "PENDING_REVIEW" && (
             <>
-              <Button variant="success" size="sm" loading={actionMutation.isPending} onClick={() => actionMutation.mutate("approve")}>
+              <Button variant="success" size="sm" loading={actionMutation.isPending}
+                onClick={() => actionMutation.mutate("approve")}>
                 <CheckCircle className="mr-1 h-3 w-3" />Setujui
               </Button>
-              <Button variant="destructive" size="sm" loading={actionMutation.isPending} onClick={() => actionMutation.mutate("reject")}>
+              <Button variant="destructive" size="sm" loading={actionMutation.isPending}
+                onClick={() => actionMutation.mutate("reject")}>
                 <XCircle className="mr-1 h-3 w-3" />Tolak
               </Button>
             </>
           )}
           {isAdmin && status === "APPROVED" && (
-            <Button size="sm" loading={actionMutation.isPending} onClick={() => actionMutation.mutate("publish")}>
+            <Button size="sm" loading={actionMutation.isPending}
+              onClick={() => actionMutation.mutate("publish")}>
               <Eye className="mr-1 h-3 w-3" />Publikasi
             </Button>
           )}
           {isAdmin && status === "PUBLISHED" && (
-            <Button variant="warning" size="sm" loading={actionMutation.isPending} onClick={() => actionMutation.mutate("unpublish")}>
+            <Button variant="warning" size="sm" loading={actionMutation.isPending}
+              onClick={() => actionMutation.mutate("unpublish")}>
               Batalkan Publikasi
             </Button>
           )}
@@ -155,7 +168,7 @@ export default function EditNewsPage() {
               >
                 <SelectTrigger><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
                 <SelectContent>
-                  {categories?.map((cat: any) => (
+                  {categories?.map((cat: { id: number; name: string }) => (
                     <SelectItem key={cat.id} value={String(cat.id)}>{cat.name}</SelectItem>
                   ))}
                 </SelectContent>
@@ -180,7 +193,9 @@ export default function EditNewsPage() {
             <ImageUpload
               value={thumbnailUrl || ""}
               onChange={(url) => setValue("thumbnailUrl", url, { shouldDirty: true })}
-              folder="/bapenda/news"
+              folder="/news"
+              module="news"
+              label={titleValue || newsData?.title || "berita"}
               disabled={!canEdit}
             />
           </CardContent>
@@ -202,7 +217,9 @@ export default function EditNewsPage() {
 
         {canEdit && (
           <div className="flex justify-end gap-3">
-            <Button type="button" variant="outline" asChild><Link href="/cms/news">Batal</Link></Button>
+            <Button type="button" variant="outline" asChild>
+              <Link href="/cms/news">Batal</Link>
+            </Button>
             <Button type="submit" loading={isSubmitting}>Simpan Perubahan</Button>
           </div>
         )}

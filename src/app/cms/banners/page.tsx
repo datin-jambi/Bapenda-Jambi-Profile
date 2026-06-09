@@ -289,7 +289,7 @@ export default function CmsBannersPage() {
               </div>
               <div className="space-y-2">
                 <Label>Gambar *</Label>
-                <ImageUpload value={imageUrl || ""} onChange={(url) => setValue("imageUrl", url)} folder="/banners" />
+                <ImageUpload value={imageUrl || ""} onChange={(url) => setValue("imageUrl", url)} folder="/banner" module="banner" label={watch("title") || "banner"} />
                 {errors.imageUrl && <p className="text-xs text-destructive">{errors.imageUrl.message}</p>}
               </div>
               <div className="grid grid-cols-2 gap-4">

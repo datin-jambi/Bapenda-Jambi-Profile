@@ -23,7 +23,8 @@ export const newsRepository = {
       prisma.news.findMany({
         where, skip: params.skip, take: params.limit,
         select: {
-          id: true, title: true, slug: true, excerpt: true, thumbnailUrl: true,
+          id: true, title: true, slug: true, excerpt: true,
+          thumbnailUrl: true,
           status: true, publishedAt: true, createdAt: true, updatedAt: true,
           category: { select: { id: true, name: true, slug: true } },
           author: { select: { id: true, name: true } },
@@ -57,7 +58,8 @@ export const newsRepository = {
 
   async create(data: {
     title: string; slug: string; categoryId: number; authorId: number;
-    excerpt?: string | null; content: string; thumbnailUrl?: string | null;
+    excerpt?: string | null; content: string;
+    thumbnailUrl?: string | null;
     status: ContentStatus; publishedAt?: Date | null;
     seoTitle?: string | null; seoDescription?: string | null;
   }) {
@@ -66,8 +68,9 @@ export const newsRepository = {
 
   async update(id: number, data: Partial<{
     title: string; slug: string; categoryId: number; excerpt: string | null;
-    content: string; thumbnailUrl: string | null; status: ContentStatus;
-    publishedAt: Date | null; seoTitle: string | null; seoDescription: string | null;
+    content: string; thumbnailUrl: string | null;
+    status: ContentStatus; publishedAt: Date | null;
+    seoTitle: string | null; seoDescription: string | null;
   }>) {
     return prisma.news.update({ where: { id }, data });
   },
@@ -92,7 +95,8 @@ export const newsRepository = {
       prisma.news.findMany({
         where, skip: params.skip, take: params.limit,
         select: {
-          id: true, title: true, slug: true, excerpt: true, thumbnailUrl: true,
+          id: true, title: true, slug: true, excerpt: true,
+          thumbnailUrl: true,
           status: true, publishedAt: true, createdAt: true,
           category: { select: { id: true, name: true, slug: true } },
           author: { select: { id: true, name: true } },

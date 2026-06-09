@@ -1,13 +1,13 @@
 export const MediaFolder = {
-  PROFILE:      "/bapenda/profile",
-  BANNER:       "/bapenda/banner",
-  GALLERY:      "/bapenda/gallery",
-  NEWS:         "/bapenda/news",
-  PUBLICATION:  "/bapenda/publication",
-  DOCUMENT:     "/bapenda/document",
-  ORGANIZATION: "/bapenda/organization",
-  SERVICE:      "/bapenda/service",
-  REGULATION:   "/bapenda/regulation",
+  PROFILE:      "/profile",
+  BANNER:       "/banner",
+  GALLERY:      "/gallery",
+  NEWS:         "/news",
+  PUBLICATION:  "/publication",
+  DOCUMENT:     "/document",
+  ORGANIZATION: "/organization",
+  SERVICE:      "/service",
+  REGULATION:   "/regulation",
 } as const;
 
 export type MediaFolderKey = keyof typeof MediaFolder;

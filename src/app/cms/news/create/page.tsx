@@ -31,6 +31,7 @@ export default function CreateNewsPage() {
   });
 
   const thumbnailUrl = watch("thumbnailUrl");
+  const titleValue = watch("title");
 
   const mutation = useMutation({
     mutationFn: (data: NewsInput) => api.post("/cms/news", data),
@@ -38,7 +39,8 @@ export default function CreateNewsPage() {
       toast.success("Berita berhasil dibuat");
       router.push("/cms/news");
     },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal membuat berita"),
+    onError: (err: { response?: { data?: { message?: string } } }) =>
+      toast.error(err.response?.data?.message || "Gagal membuat berita"),
   });
 
   return (
@@ -68,7 +70,7 @@ export default function CreateNewsPage() {
               <Select onValueChange={(v) => setValue("categoryId", parseInt(v, 10))}>
                 <SelectTrigger><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
                 <SelectContent>
-                  {categories?.map((cat: any) => (
+                  {categories?.map((cat: { id: number; name: string }) => (
                     <SelectItem key={cat.id} value={String(cat.id)}>{cat.name}</SelectItem>
                   ))}
                 </SelectContent>
@@ -95,7 +97,9 @@ export default function CreateNewsPage() {
             <ImageUpload
               value={thumbnailUrl || ""}
               onChange={(url) => setValue("thumbnailUrl", url)}
-              folder="/bapenda/news"
+              folder="/news"
+              module="news"
+              label={titleValue || "berita"}
             />
           </CardContent>
         </Card>

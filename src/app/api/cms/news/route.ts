@@ -7,7 +7,7 @@ import { createAuditLog } from "@/lib/audit";
 import { ContentStatus } from "@prisma/client";
 import { hasPermission } from "@/types";
 import { withErrorHandler } from "@/lib/with-error-handler";
-import { UnauthorizedError, ForbiddenError, ValidationError, ConflictError } from "@/lib/errors";
+import { UnauthorizedError, ForbiddenError, ValidationError } from "@/lib/errors";
 import slugify from "slugify";
 
 export const GET = withErrorHandler(async (request: NextRequest) => {
@@ -45,18 +45,17 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   }
 
   let slug = slugify(parsed.data.title, { lower: true, strict: true });
-
-  // Ensure slug uniqueness
   const existing = await newsRepository.findBySlug(slug);
-  if (existing) {
-    slug = `${slug}-${Date.now()}`;
-  }
+  if (existing) slug = `${slug}-${Date.now()}`;
 
   let status: ContentStatus = "DRAFT";
   if (user.role === "Admin_Uptd" || user.role === "Editor") status = "PENDING_REVIEW";
 
   const news = await newsRepository.create({
-    ...parsed.data, slug, authorId: user.id, status,
+    ...parsed.data,
+    slug,
+    authorId: user.id,
+    status,
   });
 
   await createAuditLog({ userId: user.id, action: "CREATE", entityType: "News", entityId: news.id, newData: news });
