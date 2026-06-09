@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="id" suppressHydrationWarning>
       <body className={`${poppins.variable} ${inter.variable} font-inter antialiased`}>
         <NextTopLoader
-          color="hsl(var(--primary))"
+          color="#f97316"
           height={3}
           showSpinner={false}
           shadow={false}
