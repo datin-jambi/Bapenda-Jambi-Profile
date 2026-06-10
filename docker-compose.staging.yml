@@ -1,0 +1,22 @@
+services:
+  app-staging:
+    image: ${DOCKER_IMAGE:-bapenda-jambi}:staging
+    container_name: app-staging
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    env_file:
+      - .env.staging
+    networks:
+      - staging-network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  staging-network:
+    name: staging-network
+    driver: bridge

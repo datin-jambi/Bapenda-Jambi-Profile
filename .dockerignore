@@ -1,0 +1,25 @@
+.git
+.gitignore
+.github
+node_modules
+.next
+out
+dist
+
+# Env files — injected at runtime via docker-compose env_file
+.env
+.env.local
+.env.staging
+.env.production
+
+# Dev / local tools
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+README.md
+*.tsbuildinfo
+
+# Docker files themselves
+Dockerfile
+docker-compose*.yml
