@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
-import { Save, Globe, Phone, Share2, Settings2 } from "lucide-react";
+import { Save, Globe, Phone, Share2, Settings2, LucideIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
 type SettingsForm = {
@@ -33,46 +33,59 @@ type SettingsForm = {
   footer_text: string;
 };
 
-const SECTIONS = [
+type FieldDef = {
+  key: keyof SettingsForm;
+  label: string;
+  placeholder: string;
+  type?: "input" | "textarea";
+};
+
+type Section = {
+  title: string;
+  icon: LucideIcon;
+  fields: FieldDef[];
+};
+
+const SECTIONS: Section[] = [
   {
     title: "Informasi Umum",
     icon: Globe,
     fields: [
-      { key: "site_name" as const, label: "Nama Website", placeholder: "BAPENDA Provinsi Jambi" },
-      { key: "site_description" as const, label: "Deskripsi Website", placeholder: "Website resmi...", type: "textarea" as const },
-      { key: "site_keywords" as const, label: "Keywords SEO", placeholder: "bapenda, pajak, jambi..." },
-      { key: "meta_author" as const, label: "Meta Author", placeholder: "BAPENDA Provinsi Jambi" },
-      { key: "logo_url" as const, label: "URL Logo", placeholder: "https://..." },
+      { key: "site_name", label: "Nama Website", placeholder: "BAPENDA Provinsi Jambi" },
+      { key: "site_description", label: "Deskripsi Website", placeholder: "Website resmi...", type: "textarea" },
+      { key: "site_keywords", label: "Keywords SEO", placeholder: "bapenda, pajak, jambi..." },
+      { key: "meta_author", label: "Meta Author", placeholder: "BAPENDA Provinsi Jambi" },
+      { key: "logo_url", label: "URL Logo", placeholder: "https://..." },
     ],
   },
   {
     title: "Informasi Kontak",
     icon: Phone,
     fields: [
-      { key: "contact_address" as const, label: "Alamat", placeholder: "Jl. Ahmad Yani No. 1...", type: "textarea" as const },
-      { key: "contact_phone" as const, label: "Telepon", placeholder: "(0741) 60436" },
-      { key: "contact_email" as const, label: "Email", placeholder: "info@bapenda.jambiprov.go.id" },
-      { key: "contact_fax" as const, label: "Fax", placeholder: "(0741) 60436" },
-      { key: "office_hours" as const, label: "Jam Operasional", placeholder: "Senin - Jumat: 08.00 - 16.00 WIB" },
+      { key: "contact_address", label: "Alamat", placeholder: "Jl. Ahmad Yani No. 1...", type: "textarea" },
+      { key: "contact_phone", label: "Telepon", placeholder: "(0741) 60436" },
+      { key: "contact_email", label: "Email", placeholder: "info@bapenda.jambiprov.go.id" },
+      { key: "contact_fax", label: "Fax", placeholder: "(0741) 60436" },
+      { key: "office_hours", label: "Jam Operasional", placeholder: "Senin - Jumat: 08.00 - 16.00 WIB" },
     ],
   },
   {
     title: "Media Sosial",
     icon: Share2,
     fields: [
-      { key: "social_facebook" as const, label: "Facebook URL", placeholder: "https://facebook.com/..." },
-      { key: "social_twitter" as const, label: "Twitter/X URL", placeholder: "https://twitter.com/..." },
-      { key: "social_instagram" as const, label: "Instagram URL", placeholder: "https://instagram.com/..." },
-      { key: "social_youtube" as const, label: "YouTube URL", placeholder: "https://youtube.com/..." },
-      { key: "social_tiktok" as const, label: "TikTok URL", placeholder: "https://tiktok.com/..." },
+      { key: "social_facebook", label: "Facebook URL", placeholder: "https://facebook.com/..." },
+      { key: "social_twitter", label: "Twitter/X URL", placeholder: "https://twitter.com/..." },
+      { key: "social_instagram", label: "Instagram URL", placeholder: "https://instagram.com/..." },
+      { key: "social_youtube", label: "YouTube URL", placeholder: "https://youtube.com/..." },
+      { key: "social_tiktok", label: "TikTok URL", placeholder: "https://tiktok.com/..." },
     ],
   },
   {
     title: "Lainnya",
     icon: Settings2,
     fields: [
-      { key: "google_analytics_id" as const, label: "Google Analytics ID", placeholder: "G-XXXXXXXXXX" },
-      { key: "footer_text" as const, label: "Teks Footer", placeholder: "© 2024 BAPENDA Provinsi Jambi..." },
+      { key: "google_analytics_id", label: "Google Analytics ID", placeholder: "G-XXXXXXXXXX" },
+      { key: "footer_text", label: "Teks Footer", placeholder: "© 2024 BAPENDA Provinsi Jambi..." },
     ],
   },
 ];
