@@ -42,6 +42,7 @@ export function PublicHeader({ pages = [] }: PublicHeaderProps) {
         { href: "/galeri", label: "Galeri" },
       ],
     },
+    { href: "/cek-pkb", label: "Cek PKB" },
     { href: "/faq", label: "FAQ" },
     { href: "/kontak", label: "Kontak" },
   ];
