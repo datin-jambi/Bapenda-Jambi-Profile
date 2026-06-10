@@ -239,15 +239,34 @@ export const bannerRepository = {
 };
 
 export const regulationRepository = {
-  async findAll(params: { skip: number; limit: number; search?: string }) {
+  async findAll(params: {
+    skip: number; limit: number; search?: string; status?: string;
+  }) {
     const where = {
       deletedAt: null,
+      ...(params.search && { title: { contains: params.search, mode: "insensitive" as const } }),
+      ...(params.status && params.status !== "all" && { status: params.status as import("@prisma/client").ContentStatus }),
+    };
+    const [data, total] = await Promise.all([
+      prisma.regulation.findMany({
+        where, skip: params.skip, take: params.limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.regulation.count({ where }),
+    ]);
+    return { data, total };
+  },
+
+  async findPublished(params: { skip: number; limit: number; search?: string }) {
+    const where = {
+      deletedAt: null,
+      status: "PUBLISHED" as import("@prisma/client").ContentStatus,
       ...(params.search && { title: { contains: params.search, mode: "insensitive" as const } }),
     };
     const [data, total] = await Promise.all([
       prisma.regulation.findMany({
         where, skip: params.skip, take: params.limit,
-        orderBy: { publishedAt: "desc" },
+        orderBy: { createdAt: "desc" },
       }),
       prisma.regulation.count({ where }),
     ]);
@@ -258,16 +277,23 @@ export const regulationRepository = {
     return prisma.regulation.findUnique({ where: { id, deletedAt: null } });
   },
 
+  async findBySlug(slug: string) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (prisma.regulation as any).findUnique({ where: { slug, deletedAt: null } });
+  },
+
   async create(data: {
-    title: string; description?: string | null;
-    fileUrl: string; publishedAt?: Date | null;
+    title: string; slug: string; description?: string | null;
+    fileUrl: string; fileId?: string | null; fileName?: string | null;
+    status?: import("@prisma/client").ContentStatus; publishedAt?: Date | null;
   }) {
     return prisma.regulation.create({ data });
   },
 
   async update(id: number, data: Partial<{
-    title: string; description: string | null;
-    fileUrl: string; publishedAt: Date | null;
+    title: string; slug: string; description: string | null;
+    fileUrl: string; fileId: string | null; fileName: string | null;
+    status: import("@prisma/client").ContentStatus; publishedAt: Date | null;
   }>) {
     return prisma.regulation.update({ where: { id }, data });
   },

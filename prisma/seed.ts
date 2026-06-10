@@ -719,22 +719,70 @@ async function main() {
   });
 
   // Seed Regulations
-  await prisma.regulation.createMany({
-    data: [
-      {
-        title: "Perda No. 8 Tahun 2010 tentang Pajak Daerah",
-        description: "Peraturan Daerah Provinsi Jambi tentang Pajak Daerah",
-        fileUrl: "https://ik.imagekit.io/o7kpef481o/bapenda/perda-8-2010.pdf",
-        publishedAt: new Date("2010-01-01"),
+  const regulationItems = [
+    {
+      title: "Perda No. 8 Tahun 2010 tentang Pajak Daerah",
+      slug: "perda-no-8-tahun-2010-tentang-pajak-daerah",
+      description: "Peraturan Daerah Provinsi Jambi tentang Pajak Daerah",
+      fileUrl: "https://ik.imagekit.io/o7kpef481o/bapenda/perda-8-2010.pdf",
+      fileId: null,
+      fileName: "perda-8-2010.pdf",
+      status: ContentStatus.PUBLISHED,
+      publishedAt: new Date("2010-01-01"),
+    },
+    {
+      title: "Pergub No. 12 Tahun 2024 tentang Tarif PKB",
+      slug: "pergub-no-12-tahun-2024-tentang-tarif-pkb",
+      description: "Peraturan Gubernur tentang Tarif Pajak Kendaraan Bermotor",
+      fileUrl: "https://ik.imagekit.io/o7kpef481o/bapenda/pergub-12-2024.pdf",
+      fileId: null,
+      fileName: "pergub-12-2024.pdf",
+      status: ContentStatus.PUBLISHED,
+      publishedAt: new Date("2024-01-15"),
+    },
+    {
+      title: "Pergub No. 5 Tahun 2023 tentang Tata Cara Pengelolaan PAD",
+      slug: "pergub-no-5-tahun-2023-tentang-tata-cara-pengelolaan-pad",
+      description: "Peraturan Gubernur tentang tata cara pengelolaan Pendapatan Asli Daerah Provinsi Jambi",
+      fileUrl: "https://ik.imagekit.io/o7kpef481o/bapenda/pergub-5-2023.pdf",
+      fileId: null,
+      fileName: "pergub-5-2023.pdf",
+      status: ContentStatus.PUBLISHED,
+      publishedAt: new Date("2023-03-10"),
+    },
+    {
+      title: "Perda No. 2 Tahun 2019 tentang BBNKB",
+      slug: "perda-no-2-tahun-2019-tentang-bbnkb",
+      description: "Peraturan Daerah tentang Bea Balik Nama Kendaraan Bermotor Provinsi Jambi",
+      fileUrl: "https://ik.imagekit.io/o7kpef481o/bapenda/perda-2-2019.pdf",
+      fileId: null,
+      fileName: "perda-2-2019.pdf",
+      status: ContentStatus.PUBLISHED,
+      publishedAt: new Date("2019-06-01"),
+    },
+    {
+      title: "Draft Revisi Pergub Tarif Pajak Air 2025",
+      slug: "draft-revisi-pergub-tarif-pajak-air-2025",
+      description: "Rancangan revisi peraturan gubernur mengenai tarif pajak air permukaan",
+      fileUrl: "https://ik.imagekit.io/o7kpef481o/bapenda/draft-pergub-pajak-air-2025.pdf",
+      fileId: null,
+      fileName: "draft-pergub-pajak-air-2025.pdf",
+      status: ContentStatus.DRAFT,
+      publishedAt: null,
+    },
+  ];
+
+  for (const reg of regulationItems) {
+    await prisma.regulation.upsert({
+      where: { slug: reg.slug },
+      update: {
+        description: reg.description,
+        status: reg.status,
+        publishedAt: reg.publishedAt,
       },
-      {
-        title: "Pergub No. 12 Tahun 2024 tentang Tarif PKB",
-        description: "Peraturan Gubernur tentang Tarif Pajak Kendaraan Bermotor",
-        fileUrl: "https://ik.imagekit.io/o7kpef481o/bapenda/pergub-12-2024.pdf",
-        publishedAt: new Date("2024-01-15"),
-      },
-    ],
-  }).catch(() => { });
+      create: reg,
+    });
+  }
 
   console.log("Seeding completed successfully!");
 }

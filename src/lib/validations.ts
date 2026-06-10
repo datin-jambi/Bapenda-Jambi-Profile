@@ -114,9 +114,12 @@ export const bannerSchema = z.object({
 
 export const regulationSchema = z.object({
   title: z.string().min(5, "Judul minimal 5 karakter"),
+  slug: z.string().optional(),
   description: z.string().optional().nullable(),
   fileUrl: z.string().min(1, "File wajib diisi"),
-  publishedAt: z.string().optional().nullable(),
+  fileId: z.string().optional().nullable(),
+  fileName: z.string().optional().nullable(),
+  status: z.nativeEnum(ContentStatus).optional().default("DRAFT"),
 });
 
 export const settingsSchema = z.record(z.string(), z.string());
@@ -170,4 +173,5 @@ export type FaqCategoryCreateInput = z.infer<typeof faqCategoryCreateSchema>;
 export type PageInput = z.infer<typeof pageSchema>;
 export type BannerInput = z.infer<typeof bannerSchema>;
 export type RegulationInput = z.infer<typeof regulationSchema>;
+export type RegulationFormInput = RegulationInput;
 export type UptdInput = z.infer<typeof uptdSchema>;

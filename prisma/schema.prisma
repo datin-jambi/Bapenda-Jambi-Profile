@@ -206,13 +206,17 @@ model Banner {
 }
 
 model Regulation {
-  id          Int       @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   title       String
+  slug        String        @unique
   description String?
   fileUrl     String
+  fileId      String?
+  fileName    String?
+  status      ContentStatus @default(DRAFT)
   publishedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   deletedAt   DateTime?
 
   @@map("regulations")

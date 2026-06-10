@@ -15,7 +15,12 @@
       "Bash(node -e \"const {execSync} = require\\('child_process'\\); try { const r = execSync\\('npx prisma db push', {encoding:'utf8', timeout:60000}\\); console.log\\(r\\); } catch\\(e\\) { console.log\\('stdout:', e.stdout\\); console.log\\('stderr:', e.stderr\\); }\")",
       "Bash(mkdir -p \"c:/Users/ASUS/Documents/BPKPD/Code/Bapeda-Jambi-Profile/src/app/cms/pages/[id]/edit\")",
       "Bash(node -e \"console.log\\(require\\('./node_modules/quill/package.json'\\).version\\)\")",
-      "Bash(node -e \"const q = require\\('./node_modules/quill/package.json'\\); console.log\\('quill:', q.version\\); const rq = require\\('./node_modules/react-quill/package.json'\\); console.log\\('react-quill:', rq.version\\);\")"
+      "Bash(node -e \"const q = require\\('./node_modules/quill/package.json'\\); console.log\\('quill:', q.version\\); const rq = require\\('./node_modules/react-quill/package.json'\\); console.log\\('react-quill:', rq.version\\);\")",
+      "Bash(node -e \"const { execSync } = require\\('child_process'\\); try { const out = execSync\\('npx prisma db push --accept-data-loss', {encoding:'utf8', stdio:'pipe'}\\); console.log\\('STDOUT:', out\\); } catch\\(e\\) { console.log\\('STDOUT:', e.stdout\\); console.log\\('STDERR:', e.stderr\\); }\")",
+      "Bash(node -e \"require\\('dotenv'\\).config\\(\\); console.log\\(process.env.DATABASE_URL\\);\")",
+      "Bash(PGPASSWORD=I4DsTlWSwL83LcqK psql postgresql://cms@103.190.214.224:5432/bapenda_jambi_cms -c ' *)",
+      "Bash(PGPASSWORD=\"I4DsTlWSwL83LcqK\" psql -h 103.190.214.224 -U cms -d bapenda_jambi_cms -c \"ALTER TABLE regulations ADD COLUMN IF NOT EXISTS slug TEXT; UPDATE regulations SET slug = CONCAT\\('regulasi-', id::text\\) WHERE slug IS NULL; ALTER TABLE regulations ALTER COLUMN slug SET NOT NULL; CREATE UNIQUE INDEX IF NOT EXISTS regulations_slug_key ON regulations\\(slug\\); ALTER TABLE regulations ADD COLUMN IF NOT EXISTS file_id TEXT; ALTER TABLE regulations ADD COLUMN IF NOT EXISTS file_name TEXT; ALTER TABLE regulations ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'DRAFT';\")",
+      "Bash(node -e \"const {execSync}=require\\('child_process'\\);try{const o=execSync\\('npx prisma generate',{encoding:'utf8',stdio:'pipe'}\\);console.log\\(o\\);}catch\\(e\\){console.log\\('OUT:',e.stdout\\);console.log\\('ERR:',e.stderr\\);}\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapeda-Jambi-Profile\\src\\app\\cms\\uptd",
