@@ -160,7 +160,7 @@ export default function CmsPagesPage() {
       headerClassName: "w-24",
       render: (row) => (
         <div className="flex items-center justify-end gap-1">
-          <Button size="sm" variant="ghost" className="h-8 w-8 p-0" asChild title="Edit">
+          <Button size="sm" variant="outline" asChild title="Edit">
             <Link href={`/cms/pages/${row.id}/edit`}>
               <Pencil className="h-3.5 w-3.5" />
             </Link>
@@ -168,8 +168,7 @@ export default function CmsPagesPage() {
           {canManage && (
             <Button
               size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+              variant="destructive"
               title="Hapus"
               onClick={() => setDeleteId(row.id)}
             >

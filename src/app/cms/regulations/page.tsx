@@ -271,7 +271,7 @@ export default function CmsRegulationsPage() {
               <Download className="h-3 w-3" />
             </Button>
           </a>
-          <Button size="sm" variant="ghost" title="Edit" onClick={() => openEdit(item)}>
+          <Button size="sm" variant="outline" title="Edit" onClick={() => openEdit(item)}>
             <Pencil className="h-3 w-3" />
           </Button>
           <Button size="sm" variant="destructive" title="Hapus" onClick={() => setDeleteId(item.id)}>

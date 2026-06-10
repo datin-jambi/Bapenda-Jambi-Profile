@@ -318,7 +318,7 @@ export default function CmsUsersPage() {
       cellClassName: "text-right",
       render: (u) => (
         <div className="flex items-center justify-end gap-1">
-          <Button size="sm" variant="ghost" asChild title="Edit">
+          <Button size="sm" variant="outline" asChild title="Edit">
             <a href={`/cms/users/${u.id}`}>
               <Pencil className="h-3 w-3" />
             </a>
@@ -327,7 +327,7 @@ export default function CmsUsersPage() {
             <>
               <Button
                 size="sm"
-                variant="ghost"
+                variant="outline"
                 title="Reset Password"
                 onClick={() => { setResetTargetId(u.id); setResetOpen(true); }}
               >

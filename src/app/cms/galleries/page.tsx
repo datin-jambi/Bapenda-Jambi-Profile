@@ -304,11 +304,11 @@ export default function CmsGalleriesPage() {
                   </Button>
                 )}
                 <div className="ml-auto flex gap-1">
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" asChild title="Edit">
+                  <Button size="sm" variant="outline" className="h-7 w-7 p-0" asChild title="Edit">
                     <Link href={`/cms/galleries/${item.id}`}><Pencil className="h-3 w-3" /></Link>
                   </Button>
                   {canDelete && (
-                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-destructive hover:text-destructive" title="Hapus"
+                    <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-destructive hover:text-destructive" title="Hapus"
                       onClick={() => setDeleteId(item.id)}>
                       <Trash2 className="h-3 w-3" />
                     </Button>

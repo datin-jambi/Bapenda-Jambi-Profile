@@ -179,11 +179,11 @@ export default function CmsNewsCategoriesPage() {
       cellClassName: "text-right",
       render: (item) => (
         <div className="flex items-center justify-end gap-1">
-          <Button size="sm" variant="ghost" asChild title="Detail">
+          <Button size="sm" variant="outline" asChild title="Detail">
             <Link href={`/cms/news-categories/${item.id}`}><Eye className="h-3 w-3" /></Link>
           </Button>
           {canManage && (
-            <Button size="sm" variant="ghost" asChild title="Edit">
+            <Button size="sm" variant="outline" asChild title="Edit">
               <Link href={`/cms/news-categories/${item.id}/edit`}><Pencil className="h-3 w-3" /></Link>
             </Button>
           )}

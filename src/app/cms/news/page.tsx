@@ -259,7 +259,7 @@ export default function CmsNewsPage() {
               <Eye className="h-3 w-3 mr-1" />Publikasi
             </Button>
           )}
-          <Button size="sm" variant="ghost" asChild title="Edit">
+          <Button size="sm" variant="outline" asChild title="Edit">
             <Link href={`/cms/news/${item.id}`}><Pencil className="h-3 w-3" /></Link>
           </Button>
           {canDelete && (

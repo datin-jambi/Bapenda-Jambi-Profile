@@ -21,6 +21,7 @@ import { DataTableFilter } from "@/components/cms/data-table-filter";
 import { DataTablePagination } from "@/components/cms/data-table-pagination";
 import { ConfirmDialog } from "@/components/cms/confirm-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -374,7 +375,7 @@ export default function CmsUptdPage() {
       cellClassName: "text-right",
       render: (u) => (
         <div className="flex items-center justify-end gap-1">
-          <Button size="sm" variant="ghost" title="Edit" onClick={() => openEdit(u)}>
+          <Button size="sm" variant="outline" title="Edit" onClick={() => openEdit(u)}>
             <Pencil className="h-3 w-3" />
           </Button>
           <Button size="sm" variant="destructive" title="Hapus" onClick={() => setDeleteId(u.id)}>
@@ -482,13 +483,17 @@ export default function CmsUptdPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>Status</Label>
-                  <select
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  <Select
                     {...register("isActive", { setValueAs: (v) => v === "true" || v === true })}
                   >
-                    <option value="true">Aktif</option>
-                    <option value="false">Nonaktif</option>
-                  </select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Aktif</SelectItem>
+                      <SelectItem value="false">Nonaktif</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="space-y-2 pt-2">
