@@ -4,9 +4,10 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const news = await newsRepository.findBySlug(params.slug);
+  const { slug } = await params;
+  const news = await newsRepository.findBySlug(slug);
   if (!news) return errorResponse("Berita tidak ditemukan", 404);
   if (news.status !== "PUBLISHED") return errorResponse("Berita tidak ditemukan", 404);
   return successResponse(news);
