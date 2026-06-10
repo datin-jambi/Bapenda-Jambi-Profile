@@ -3,7 +3,9 @@
     "allow": [
       "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
       "Bash(node -e ' *)",
-      "Bash(mkdir -p \"c:/Users/ASUS/Documents/BPKPD/Code/Bapeda-Jambi-Profile/src/app/cms/uptd/[id]\")"
+      "Bash(mkdir -p \"c:/Users/ASUS/Documents/BPKPD/Code/Bapeda-Jambi-Profile/src/app/cms/uptd/[id]\")",
+      "Bash(npm info *)",
+      "Bash(npm ci *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapeda-Jambi-Profile\\src\\app\\cms\\uptd"
