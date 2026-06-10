@@ -17,10 +17,11 @@ export default async function KontakPage() {
         <p className="text-gray-500 mt-2">Hubungi BAPENDA Provinsi Jambi untuk informasi lebih lanjut</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+        {/* Informasi Kantor */}
+        <div className="space-y-6 min-w-0">
           <h2 className="text-xl font-semibold text-primary">Informasi Kantor</h2>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {[
               { icon: Building2, label: "Nama Instansi", value: "Badan Pendapatan Daerah Provinsi Jambi" },
               { icon: MapPin, label: "Alamat", value: settings.contact_address || "Jl. Ahmad Yani No. 1, Kota Jambi 36122" },
@@ -28,22 +29,23 @@ export default async function KontakPage() {
               { icon: Mail, label: "Email", value: settings.contact_email || "info@bapenda.jambiprov.go.id" },
               { icon: Clock, label: "Jam Operasional", value: settings.office_hours || "Senin – Jumat: 08.00 – 16.00 WIB" },
             ].map(({ icon: Icon, label, value }) => (
-              <div key={label} className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div key={label} className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl min-w-0">
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
                   <Icon className="h-5 w-5 text-primary" />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-xs text-gray-500 font-medium">{label}</p>
-                  <p className="text-gray-800 text-sm mt-0.5">{value}</p>
+                  <p className="text-gray-800 text-sm mt-0.5 break-words">{value}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div>
+        {/* Lokasi */}
+        <div className="min-w-0">
           <h2 className="text-xl font-semibold text-primary mb-6">Lokasi</h2>
-          <div className="w-full h-80 rounded-xl overflow-hidden bg-gray-100 border">
+          <div className="w-full rounded-xl overflow-hidden bg-gray-100 border aspect-[4/3] lg:aspect-auto lg:h-[420px]">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.3693882843843!2d103.60954!3d-1.61089!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMcKwMzYnMzkuMiJTIDEwM8KwMzYnMzQuMyJF!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid"
               width="100%"
