@@ -586,7 +586,7 @@ export default function CmsUptdPage() {
                 </div>
                 {errors.googleMapsUrl && <p className="text-xs text-destructive">{errors.googleMapsUrl.message}</p>}
                 <p className="text-xs text-muted-foreground">
-                  Salin link dari Google Maps → Bagikan → Salin tautan, lalu klik "Ambil Koordinat".
+                  Salin link dari Google Maps → Bagikan → Salin tautan, lalu klik &quot;Ambil Koordinat&quot;.
                 </p>
               </div>
 

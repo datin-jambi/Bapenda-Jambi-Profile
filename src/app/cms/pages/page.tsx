@@ -38,10 +38,10 @@ export default function CmsPagesPage() {
       toast.success("Halaman berhasil diperbarui");
       setOpen(false); reset(); setEditId(null);
     },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal menyimpan"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal menyimpan"),
   });
 
-  function openEdit(p: any) {
+  function openEdit(p: { id: string; title: string; slug: string; content: string; seoTitle?: string; seoDescription?: string; isPublished: boolean }) {
     reset({ title: p.title, slug: p.slug, content: p.content, seoTitle: p.seoTitle, seoDescription: p.seoDescription, isPublished: p.isPublished });
     setEditId(p.id);
     setOpen(true);
@@ -70,7 +70,7 @@ export default function CmsPagesPage() {
             <div className="p-12 text-center text-muted-foreground">Belum ada halaman</div>
           ) : (
             <div className="divide-y">
-              {pages.map((p: any) => (
+              {pages.map((p: { id: string; title: string; slug: string; isPublished: boolean }) => (
                 <div key={p.id} className="flex items-center justify-between px-6 py-4">
                   <div>
                     <p className="font-medium text-gray-800">{PAGE_LABELS[p.slug] || p.title}</p>

@@ -1,4 +1,4 @@
-import { Car, FileText, Info, CreditCard, Shield, Clock } from "lucide-react";
+import { Car, FileText, Info, CreditCard } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -48,7 +48,7 @@ const SERVICES = [
   },
 ];
 
-function TrendingUpIcon(props: any) {
+function TrendingUpIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
       <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />

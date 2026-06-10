@@ -53,7 +53,7 @@ export default function LokasiUptdPage() {
     },
   });
 
-  const markers = data?.data ?? [];
+  const markers = useMemo(() => data?.data ?? [], [data]);
   const selected = useMemo(() => markers.find((m) => m.id === selectedId) ?? null, [markers, selectedId]);
 
   function handleSelect(id: number) {

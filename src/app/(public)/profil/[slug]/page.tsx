@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import { pageRepository } from "@/repositories/content.repository";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -41,7 +40,7 @@ export default async function ProfilPage({ params }: Props) {
               <h3 className="text-white font-semibold text-sm">Menu Profil</h3>
             </div>
             <nav className="p-2 space-y-1">
-              {Object.entries(SLUG_MAP).map(([key, val]) => (
+              {Object.entries(SLUG_MAP).map(([key, _val]) => (
                 <a
                   key={key}
                   href={`/profil/${key}`}

@@ -88,9 +88,9 @@ export const DELETE = withErrorHandler(async (request: NextRequest, ctx) => {
   if (!gallery) throw new NotFoundError("Galeri tidak ditemukan");
 
   // Delete all ImageKit files for items that have fileId stored
-  const itemsWithFileId = gallery.items.filter((item: any) => item.fileId);
+  const itemsWithFileId = gallery.items.filter((item: { fileId?: string }) => item.fileId);
   await Promise.allSettled(
-    itemsWithFileId.map((item: any) => deleteFile(item.fileId))
+    itemsWithFileId.map((item: { fileId: string }) => deleteFile(item.fileId))
   );
 
   await galleryRepository.delete(id);

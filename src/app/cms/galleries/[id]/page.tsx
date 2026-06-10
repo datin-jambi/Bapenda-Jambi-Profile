@@ -48,7 +48,7 @@ export default function EditGalleryPage() {
   const updateMutation = useMutation({
     mutationFn: (data: GalleryInput) => api.put(`/cms/galleries/${id}`, data),
     onSuccess: () => { toast.success("Galeri diperbarui"); queryClient.invalidateQueries({ queryKey: ["cms-gallery-detail", id] }); },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
   const actionMutation = useMutation({
@@ -59,18 +59,18 @@ export default function EditGalleryPage() {
       const msgs: Record<string, string> = { submit: "Dikirim untuk review", approve: "Disetujui", reject: "Ditolak", publish: "Dipublikasi", unpublish: "Dibatalkan" };
       toast.success(msgs[action] || "Berhasil");
     },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
   const addItemMutation = useMutation({
     mutationFn: (fileUrl: string) => api.post(`/cms/galleries/${id}/items`, { mediaType: "IMAGE", fileUrl }),
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal menambah foto"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal menambah foto"),
   });
 
   const deleteItemMutation = useMutation({
     mutationFn: (itemId: number) => api.delete(`/cms/galleries/${id}/items/${itemId}`),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["cms-gallery-detail", id] }); toast.success("Item dihapus"); },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
   async function handleMultipleUpload(files: FileList) {
@@ -252,10 +252,10 @@ export default function EditGalleryPage() {
           )}
 
           {!gallery?.items?.length ? (
-            <p className="text-sm text-muted-foreground text-center py-8">Belum ada foto. Klik "Tambah Foto" untuk mulai.</p>
+            <p className="text-sm text-muted-foreground text-center py-8">Belum ada foto. Klik &quot;Tambah Foto&quot; untuk mulai.</p>
           ) : (
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-              {gallery.items.map((item: any) => (
+              {gallery.items.map((item: { id: number; fileUrl: string; title?: string }) => (
                 <div key={item.id} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100">
                   <FallbackImage src={item.fileUrl} alt={item.title || "Gallery item"} fallback="galleryItem" fill className="object-cover" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">

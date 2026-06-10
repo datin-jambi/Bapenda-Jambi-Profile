@@ -44,17 +44,17 @@ export default function CmsRegulationsPage() {
       toast.success(editId ? "Regulasi diperbarui" : "Regulasi dibuat");
       setOpen(false); reset(); setEditId(null);
     },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/cms/regulations/${id}`),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["cms-regulations"] }); toast.success("Regulasi dihapus"); },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
   function openCreate() { reset({ fileUrl: "" }); setEditId(null); setOpen(true); }
-  function openEdit(r: any) {
+  function openEdit(r: { id: string; title: string; description?: string; fileUrl: string; publishedAt?: string }) {
     reset({ title: r.title, description: r.description, fileUrl: r.fileUrl, publishedAt: r.publishedAt?.split("T")[0] });
     setEditId(r.id); setOpen(true);
   }
@@ -89,7 +89,7 @@ export default function CmsRegulationsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {regulations.map((r: any) => (
+                {regulations.map((r: { id: string; title: string; fileUrl: string; publishedAt?: string }) => (
                   <TableRow key={r.id}>
                     <TableCell className="font-medium">{r.title}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{r.publishedAt ? formatDate(r.publishedAt) : "-"}</TableCell>

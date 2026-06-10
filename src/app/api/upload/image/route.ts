@@ -16,7 +16,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   const formData = await request.formData();
   const file = formData.get("file") as File | null;
   const folderRaw = (formData.get("folder") as string) || MediaFolder.PROFILE;
-  const module = (formData.get("module") as string) || "";
+  const moduleName = (formData.get("module") as string) || "";
   const label = (formData.get("label") as string) || "";
 
   if (!file) throw new ValidationError("File wajib diisi");
@@ -35,8 +35,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     : MediaFolder.PROFILE;
 
   // Use slug-based name when module+label provided, otherwise fall back to original filename
-  const fileName = module && label
-    ? buildImageFileName(module, label)
+  const fileName = moduleName && label
+    ? buildImageFileName(moduleName, label)
     : file.name;
 
   const buffer = Buffer.from(await file.arrayBuffer());

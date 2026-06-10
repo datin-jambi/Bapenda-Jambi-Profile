@@ -3,17 +3,9 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Newspaper, Images, HelpCircle, Users, TrendingUp, Clock } from "lucide-react";
+import { Newspaper, Images, HelpCircle, TrendingUp, Clock } from "lucide-react";
 import { useAuthStore } from "@/store";
 import { formatDate } from "@/lib/utils";
-
-interface DashboardStats {
-  news: { total: number; published: number; pending: number };
-  galleries: { total: number; published: number };
-  faqs: { total: number; published: number };
-  users: { total: number };
-}
 
 function StatCard({ title, value, icon: Icon, sub, color }: {
   title: string; value: number; icon: React.ElementType; sub?: string; color: string;

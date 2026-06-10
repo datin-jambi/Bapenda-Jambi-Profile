@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import { regulationRepository } from "@/repositories/content.repository";
 import { formatDate } from "@/lib/utils";
 import { FileText, Download, Search } from "lucide-react";

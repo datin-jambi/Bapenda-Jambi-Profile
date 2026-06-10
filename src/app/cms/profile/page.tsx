@@ -37,7 +37,7 @@ export default function CmsProfilePage() {
     if (me) {
       profileForm.reset({ name: me.name, email: me.email, phone: me.phone, gender: me.gender });
     }
-  }, [me]);
+  }, [me, profileForm]);
 
   const profileMutation = useMutation({
     mutationFn: (data: UpdateUserInput) => api.put(`/cms/users/${me?.id}`, data),
@@ -46,14 +46,14 @@ export default function CmsProfilePage() {
       if (storeUser) setUser({ ...storeUser, name: res.data.data.name });
       toast.success("Profil berhasil diperbarui");
     },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
   const passwordMutation = useMutation({
     mutationFn: (data: ChangePasswordInput) =>
       api.put(`/cms/users/${me?.id}/password`, data),
     onSuccess: () => { passwordForm.reset(); toast.success("Password berhasil diubah"); },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal mengubah password"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal mengubah password"),
   });
 
   if (isLoading) return (

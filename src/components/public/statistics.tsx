@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
 
 const STATS = [
   { label: "Wajib Pajak Terdaftar", value: 1250000, suffix: "+", prefix: "" },

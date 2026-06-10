@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { galleryRepository } from "@/repositories/gallery.repository";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse } from "@/lib/api-response";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;

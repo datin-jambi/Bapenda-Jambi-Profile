@@ -52,7 +52,6 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   if (user.role === "Admin_Uptd" || user.role === "Editor") status = "PENDING_REVIEW";
 
   const createData = { ...parsed.data, slug, authorId: user.id, status };
-  console.log("[news/create] data:", JSON.stringify(createData));
 
   let news;
   try {

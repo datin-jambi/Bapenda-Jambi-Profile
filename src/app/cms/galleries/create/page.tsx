@@ -31,7 +31,7 @@ export default function CreateGalleryPage() {
       toast.success("Galeri berhasil dibuat");
       router.push(`/cms/galleries/${res.data.data.id}`);
     },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal membuat galeri"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal membuat galeri"),
   });
 
   return (

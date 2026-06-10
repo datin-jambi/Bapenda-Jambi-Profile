@@ -58,13 +58,13 @@ export default function EditUserPage() {
   const updateMutation = useMutation({
     mutationFn: (data: UpdateUserInput) => api.put(`/cms/users/${id}`, data),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["cms-user", id] }); toast.success("Pengguna diperbarui"); },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
   const toggleActiveMutation = useMutation({
     mutationFn: (isActive: boolean) => api.put(`/cms/users/${id}`, { isActive }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["cms-user", id] }); toast.success("Status diperbarui"); },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
   if (isLoading) return (
@@ -144,7 +144,7 @@ export default function EditUserPage() {
                     <Select defaultValue={String(userData?.uptdId) || ""} onValueChange={(v) => setValue("uptdId", parseInt(v, 10))}>
                       <SelectTrigger><SelectValue placeholder="Pilih UPTD" /></SelectTrigger>
                       <SelectContent>
-                        {uptds?.map((u: any) => <SelectItem key={u.id} value={String(u.id)}>{u.name}</SelectItem>)}
+                        {uptds?.map((u: { id: number; name: string }) => <SelectItem key={u.id} value={String(u.id)}>{u.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>

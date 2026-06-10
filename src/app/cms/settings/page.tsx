@@ -30,7 +30,7 @@ export default function CmsSettingsPage() {
   const mutation = useMutation({
     mutationFn: (data: Record<string, string>) => api.put("/cms/settings", data),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["cms-settings"] }); toast.success("Pengaturan berhasil disimpan"); },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal menyimpan"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal menyimpan"),
   });
 
   if (isLoading) return (

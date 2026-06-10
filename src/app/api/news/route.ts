@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 import { newsRepository } from "@/repositories/news.repository";
-import { getPaginationParams, paginatedResponse, errorResponse, successResponse } from "@/lib/api-response";
-import { ContentStatus } from "@prisma/client";
+import { getPaginationParams, paginatedResponse } from "@/lib/api-response";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;

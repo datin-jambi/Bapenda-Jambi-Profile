@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
@@ -34,13 +34,13 @@ export default function CmsGalleriesPage() {
     mutationFn: ({ id, action }: { id: string; action: string }) =>
       api.patch(`/cms/galleries/${id}`, { action }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["cms-galleries"] }); toast.success("Status diperbarui"); },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/cms/galleries/${id}`),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["cms-galleries"] }); toast.success("Galeri dihapus"); },
-    onError: (err: any) => toast.error(err.response?.data?.message || "Gagal"),
+    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
   const canApprove = user?.role === "Super_Admin" || user?.role === "Admin";
@@ -78,7 +78,7 @@ export default function CmsGalleriesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {galleries.map((item: any) => (
+                {galleries.map((item: { id: string; title: string; status: string; coverImage?: string; author?: { name: string }; createdAt: string; _count?: { items: number } }) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.title}</TableCell>
                     <TableCell>

@@ -29,8 +29,9 @@ export default function LoginPage() {
       setUser(res.data.data.user);
       toast.success("Login berhasil");
       router.push("/cms/dashboard");
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Login gagal");
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || "Login gagal");
     }
   }
 
