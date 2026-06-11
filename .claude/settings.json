@@ -22,7 +22,9 @@
       "Bash(PGPASSWORD=\"I4DsTlWSwL83LcqK\" psql -h 103.190.214.224 -U cms -d bapenda_jambi_cms -c \"ALTER TABLE regulations ADD COLUMN IF NOT EXISTS slug TEXT; UPDATE regulations SET slug = CONCAT\\('regulasi-', id::text\\) WHERE slug IS NULL; ALTER TABLE regulations ALTER COLUMN slug SET NOT NULL; CREATE UNIQUE INDEX IF NOT EXISTS regulations_slug_key ON regulations\\(slug\\); ALTER TABLE regulations ADD COLUMN IF NOT EXISTS file_id TEXT; ALTER TABLE regulations ADD COLUMN IF NOT EXISTS file_name TEXT; ALTER TABLE regulations ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'DRAFT';\")",
       "Bash(node -e \"const {execSync}=require\\('child_process'\\);try{const o=execSync\\('npx prisma generate',{encoding:'utf8',stdio:'pipe'}\\);console.log\\(o\\);}catch\\(e\\){console.log\\('OUT:',e.stdout\\);console.log\\('ERR:',e.stderr\\);}\")",
       "Read(//c/laragon/www/profile-new/**)",
-      "Bash(mkdir -p \"c:\\\\Users\\\\ASUS\\\\Documents\\\\BPKPD\\\\Code\\\\Bapeda-Jambi-Profile\\\\src\\\\app\\\\api\\\\cms\\\\dashboard\")"
+      "Bash(mkdir -p \"c:\\\\Users\\\\ASUS\\\\Documents\\\\BPKPD\\\\Code\\\\Bapeda-Jambi-Profile\\\\src\\\\app\\\\api\\\\cms\\\\dashboard\")",
+      "WebSearch",
+      "WebFetch(domain:esamsat.jambiprov.go.id)"
     ],
     "additionalDirectories": [
       "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapeda-Jambi-Profile\\src\\app\\cms\\uptd",

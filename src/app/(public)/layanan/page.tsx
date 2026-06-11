@@ -1,4 +1,4 @@
-import { Car, FileText, Info, CreditCard } from "lucide-react";
+import { FileText, Info, CreditCard, Search } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const SERVICES = [
   {
     id: "pkb",
-    icon: Car,
+    icon: Search,
     title: "Pajak Kendaraan Bermotor (PKB)",
     color: "bg-blue-50 border-blue-200",
     iconColor: "text-blue-600",
@@ -68,12 +68,13 @@ export default function LayananPage() {
       {/* Quick links */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
         {[
-          { href: "https://esamsat.jambiprov.go.id", label: "E-Samsat Online", icon: CreditCard, desc: "Bayar PKB online" },
-          { href: "#pkb", label: "Info PKB", icon: Car, desc: "Pajak kendaraan" },
-          { href: "#njkb", label: "Info NJKB", icon: FileText, desc: "Nilai jual kendaraan" },
-          { href: "#pad", label: "Info PAD", icon: Info, desc: "Pendapatan daerah" },
+          { href: "/cek-pkb", label: "Cek Pajak (PKB)", icon: Search, desc: "Cek tagihan PKB", internal: true },
+          { href: "https://esamsat.jambiprov.go.id", label: "E-Samsat Online", icon: CreditCard, desc: "Bayar PKB online", internal: false },
+          { href: "#njkb", label: "Info NJKB", icon: FileText, desc: "Nilai jual kendaraan", internal: true },
+          { href: "#pad", label: "Info PAD", icon: Info, desc: "Pendapatan daerah", internal: true },
         ].map((s) => (
-          <a key={s.label} href={s.href} className="bg-white border rounded-xl p-4 text-center hover:shadow-md transition-shadow hover:border-primary/30 group">
+          <a key={s.label} href={s.href} {...(!s.internal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            className="bg-white border rounded-xl p-4 text-center hover:shadow-md transition-shadow hover:border-primary/30 group">
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:bg-primary group-hover:text-white transition-colors">
               <s.icon className="h-5 w-5 text-primary group-hover:text-white" />
             </div>
