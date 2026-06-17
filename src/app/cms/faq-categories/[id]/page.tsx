@@ -146,7 +146,7 @@ export default function FaqCategoryDetailPage() {
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0 ml-3">
                     <span className="text-xs text-muted-foreground">{faq.viewCount}x</span>
-                    <Button size="sm" variant="ghost" asChild>
+                    <Button size="sm" variant="outline" asChild>
                       <Link href={`/cms/faqs/${faq.id}`}><Pencil className="h-3 w-3" /></Link>
                     </Button>
                   </div>

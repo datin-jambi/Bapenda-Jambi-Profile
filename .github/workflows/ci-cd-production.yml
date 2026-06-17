@@ -1,0 +1,109 @@
+name: CI/CD - Production (Main Branch)
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  ci:
+    name: Lint, Typecheck & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run typecheck
+        run: npx tsc --noEmit
+
+      - name: Run build
+        run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.PROD_JWT_SECRET }}
+          JWT_REFRESH_SECRET: ${{ secrets.PROD_JWT_REFRESH_SECRET }}
+          JWT_EXPIRES_IN: "15m"
+          JWT_REFRESH_EXPIRES_IN: "7d"
+          IMAGEKIT_PUBLIC_KEY: ${{ secrets.IMAGEKIT_PUBLIC_KEY }}
+          IMAGEKIT_PRIVATE_KEY: ${{ secrets.IMAGEKIT_PRIVATE_KEY }}
+          IMAGEKIT_URL_ENDPOINT: ${{ secrets.IMAGEKIT_URL_ENDPOINT }}
+          NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY: ${{ secrets.IMAGEKIT_PUBLIC_KEY }}
+          NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT: ${{ secrets.IMAGEKIT_URL_ENDPOINT }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.PROD_APP_URL }}
+          NEXT_PUBLIC_APP_NAME: "BAPENDA Provinsi Jambi"
+
+  cd:
+    name: Build Image & Deploy to Production
+    runs-on: ubuntu-latest
+    needs: ci
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=production
+            type=sha,prefix=prod-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to production server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          port: ${{ secrets.PROD_SSH_PORT || 22 }}
+          script: |
+            cd ${{ secrets.PROD_DEPLOY_PATH }}
+
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            export DOCKER_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            docker compose -f docker-compose.production.yml pull
+            docker compose -f docker-compose.production.yml up -d --remove-orphans
+
+            docker image prune -f

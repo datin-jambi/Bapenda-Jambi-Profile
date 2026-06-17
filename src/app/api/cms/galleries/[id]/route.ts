@@ -8,7 +8,6 @@ import { ContentStatus } from "@prisma/client";
 import { createAuditLog } from "@/lib/audit";
 import { withErrorHandler, resolveParams } from "@/lib/with-error-handler";
 import { UnauthorizedError, ForbiddenError, ValidationError, NotFoundError, BadRequestError } from "@/lib/errors";
-import { deleteFile } from "@/lib/imagekit";
 
 export const GET = withErrorHandler(async (request: NextRequest, ctx) => {
   const user = await getAuthUser();
@@ -86,12 +85,6 @@ export const DELETE = withErrorHandler(async (request: NextRequest, ctx) => {
 
   const gallery = await galleryRepository.findById(id);
   if (!gallery) throw new NotFoundError("Galeri tidak ditemukan");
-
-  // Delete all ImageKit files for items that have fileId stored
-  const itemsWithFileId = gallery.items.filter((item: { fileId?: string }) => item.fileId);
-  await Promise.allSettled(
-    itemsWithFileId.map((item: { fileId: string }) => deleteFile(item.fileId))
-  );
 
   await galleryRepository.delete(id);
   await createAuditLog({ userId: user.id, action: "DELETE", entityType: "Gallery", entityId: id });

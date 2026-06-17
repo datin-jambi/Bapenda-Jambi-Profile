@@ -1,20 +1,29 @@
 import ImageKit from "imagekit";
 import { MediaFolderPath } from "./media-folders";
 
-const publicKey = process.env.IMAGEKIT_PUBLIC_KEY ?? "";
-const privateKey = process.env.IMAGEKIT_PRIVATE_KEY ?? "";
-const urlEndpoint = process.env.IMAGEKIT_URL_ENDPOINT ?? "";
+let _instance: ImageKit | null = null;
 
-if (!publicKey || !privateKey || !urlEndpoint) {
-  console.warn("[ImageKit] Missing env vars: IMAGEKIT_PUBLIC_KEY, IMAGEKIT_PRIVATE_KEY, or IMAGEKIT_URL_ENDPOINT");
+function getImageKit(): ImageKit {
+  if (!_instance) {
+    const publicKey = process.env.IMAGEKIT_PUBLIC_KEY;
+    const privateKey = process.env.IMAGEKIT_PRIVATE_KEY;
+    const urlEndpoint = process.env.IMAGEKIT_URL_ENDPOINT;
+
+    if (!publicKey || !privateKey || !urlEndpoint) {
+      throw new Error(
+        "[ImageKit] Missing env vars: IMAGEKIT_PUBLIC_KEY, IMAGEKIT_PRIVATE_KEY, IMAGEKIT_URL_ENDPOINT"
+      );
+    }
+
+    _instance = new ImageKit({ publicKey, privateKey, urlEndpoint });
+  }
+  return _instance;
 }
-
-export const imagekit = new ImageKit({ publicKey, privateKey, urlEndpoint });
 
 // ─── Auth params (for client-side upload) ────────────────────────────────────
 
 export async function getImageKitAuthParams() {
-  return imagekit.getAuthenticationParameters();
+  return getImageKit().getAuthenticationParameters();
 }
 
 // ─── Upload ───────────────────────────────────────────────────────────────────
@@ -34,7 +43,7 @@ export async function uploadFile(
   fileName: string,
   folder: MediaFolderPath
 ): Promise<UploadResult> {
-  const response = await imagekit.upload({
+  const response = await getImageKit().upload({
     file,
     fileName,
     folder,
@@ -55,7 +64,7 @@ export async function uploadFile(
 // ─── Delete ───────────────────────────────────────────────────────────────────
 
 export async function deleteFile(fileId: string): Promise<void> {
-  await imagekit.deleteFile(fileId);
+  await getImageKit().deleteFile(fileId);
 }
 
 // ─── URL generation ───────────────────────────────────────────────────────────
@@ -72,7 +81,7 @@ export function getImageKitUrl(
   filePath: string,
   transformations?: ImageTransformation
 ): string {
-  const endpoint = (process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT ?? urlEndpoint).replace(/\/$/, "");
+  const endpoint = (process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT ?? process.env.IMAGEKIT_URL_ENDPOINT ?? "").replace(/\/$/, "");
 
   if (!transformations) return `${endpoint}${filePath}`;
 

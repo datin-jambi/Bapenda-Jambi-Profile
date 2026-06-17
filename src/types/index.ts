@@ -91,6 +91,7 @@ export type Permission =
   | "manage:faq"
   | "delete:content"
   | "view:audit-logs"
+  | "manage:news"
   | "create:news"
   | "edit:news"
   | "create:gallery"
@@ -107,6 +108,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "approve:news",
     "approve:gallery",
     "manage:faq",
+    "manage:news",
     "delete:content",
     "view:audit-logs",
     "create:news",
@@ -118,6 +120,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "approve:news",
     "approve:gallery",
     "manage:faq",
+    "manage:news",
     "manage:regulations",
     "manage:pages",
     "manage:banners",

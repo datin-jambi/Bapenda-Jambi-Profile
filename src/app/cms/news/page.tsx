@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, Suspense } from "react";
 import api from "@/lib/axios";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import { DataTableFilter } from "@/components/cms/data-table-filter";
 import { DataTable, ColumnDef } from "@/components/cms/data-table";
 import { DataTablePagination } from "@/components/cms/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
+
 
 type NewsCategory = { id: number; name: string; slug: string };
 
@@ -46,7 +47,7 @@ const STATUS_MAP: Record<string, { label: string; variant: "default" | "success"
   PUBLISHED: { label: "Dipublikasi", variant: "success" },
 };
 
-export default function CmsNewsPage() {
+function CmsNewsPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -259,7 +260,7 @@ export default function CmsNewsPage() {
               <Eye className="h-3 w-3 mr-1" />Publikasi
             </Button>
           )}
-          <Button size="sm" variant="ghost" asChild title="Edit">
+          <Button size="sm" variant="outline" asChild title="Edit">
             <Link href={`/cms/news/${item.id}`}><Pencil className="h-3 w-3" /></Link>
           </Button>
           {canDelete && (
@@ -351,4 +352,8 @@ export default function CmsNewsPage() {
       />
     </div>
   );
+}
+
+export default function Page() {
+  return <Suspense><CmsNewsPage /></Suspense>;
 }

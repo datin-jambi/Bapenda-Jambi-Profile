@@ -1,7 +1,12 @@
 import { PublicHeader } from "@/components/public/header";
 import { PublicFooter } from "@/components/public/footer";
+import { pageRepository } from "@/repositories/content.repository";
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
+export default async function PublicLayout({ children }: { children: React.ReactNode }) {
+  const pages = await pageRepository.findAll()
+    .then((all) => all.filter((p) => p.isPublished).map((p) => ({ slug: p.slug, title: p.title })))
+    .catch(() => []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <div className="bg-primary-900 text-white text-xs py-1.5">
@@ -14,7 +19,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           </div>
         </div>
       </div>
-      <PublicHeader />
+      <PublicHeader pages={pages} />
       <main className="flex-1">{children}</main>
       <PublicFooter />
     </div>

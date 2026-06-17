@@ -4,9 +4,17 @@ import { useSidebarStore } from "@/store";
 import { CmsSidebar } from "@/components/cms/sidebar";
 import { CmsHeader } from "@/components/cms/header";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 export default function CmsLayout({ children }: { children: React.ReactNode }) {
   const { isOpen } = useSidebarStore();
+  const pathname = usePathname();
+
+  const isAuthPage = pathname === "/cms/login";
+
+  if (isAuthPage) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

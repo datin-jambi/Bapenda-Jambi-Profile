@@ -54,10 +54,10 @@ const buttonVariants = cva(
 
         // Warning — gradient kuning/oranye
         warning: [
-          "bg-gradient-to-b from-amber-400 to-amber-500 text-white",
+          "bg-gradient-to-b from-amber-400 to-amber-500 text-white hover:text-gray-800",
           "shadow-[0_1px_2px_rgba(0,0,0,0.12),0_2px_8px_rgba(245,158,11,0.25)]",
           "border border-amber-500/40",
-          "hover:from-amber-300 hover:to-amber-400",
+          "hover:from-amber-300 hover:to-amber-400 ",
           "hover:shadow-[0_2px_4px_rgba(0,0,0,0.12),0_4px_16px_rgba(245,158,11,0.35)]",
           "hover:scale-[1.02]",
           "focus-visible:ring-amber-400",
@@ -76,7 +76,7 @@ const buttonVariants = cva(
 
         // Info — gradient cyan/biru muda
         info: [
-          "bg-gradient-to-b from-cyan-500 to-cyan-600 text-white",
+          "bg-gradient-to-b from-cyan-500 to-cyan-600 text-white hover:text-gray-800",
           "shadow-[0_1px_2px_rgba(0,0,0,0.12),0_2px_8px_rgba(6,182,212,0.25)]",
           "border border-cyan-600/40",
           "hover:from-cyan-400 hover:to-cyan-500",
@@ -117,6 +117,8 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-9 px-4 py-2",
+        xxs: "h-6 px-2 py-1 text-xs",
+        xs: "h-7 rounded-md px-3 text-xs",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-11 rounded-xl px-6 text-base",
         xl: "h-12 rounded-xl px-8 text-base font-semibold",
@@ -130,7 +132,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
   loading?: boolean
   leftIcon?: React.ReactNode

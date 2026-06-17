@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, Suspense } from "react";
 import api from "@/lib/axios";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,8 @@ import { DataTable, ColumnDef } from "@/components/cms/data-table";
 import { DataTablePagination } from "@/components/cms/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
 
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 type Banner = {
   id: string;
   title: string;
@@ -40,7 +42,7 @@ type BannerResponse = {
   meta: { page: number; limit: number; totalItems: number; totalPages: number };
 };
 
-export default function CmsBannersPage() {
+function CmsBannersPage() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
@@ -106,7 +108,7 @@ export default function CmsBannersPage() {
 
   // ── Forms ──────────────────────────────────────────────────────────────────
 
-  const { register, handleSubmit, setValue, watch, reset, formState: { errors, isSubmitting } } = useForm<BannerInput>({
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<BannerInput>({
     resolver: zodResolver(bannerSchema),
     defaultValues: { isActive: true, sortOrder: 0 },
   });
@@ -205,7 +207,7 @@ export default function CmsBannersPage() {
       key: "actions", header: "Aksi", headerClassName: "text-right", cellClassName: "text-right",
       render: (b) => (
         <div className="flex items-center justify-end gap-1">
-          <Button size="sm" variant="ghost" onClick={() => openEdit(b)}><Pencil className="h-3 w-3" /></Button>
+          <Button size="sm" variant="outline" onClick={() => openEdit(b)}><Pencil className="h-3 w-3" /></Button>
           <Button size="sm" variant="destructive" onClick={() => setDeleteId(b.id)}>
             <Trash2 className="h-3 w-3" />
           </Button>
@@ -314,25 +316,28 @@ export default function CmsBannersPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>Status</Label>
-                  <select
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    value={watch("isActive") ? "true" : "false"}
-                    onChange={(e) => setValue("isActive", e.target.value === "true")}
-                  >
-                    <option value="true">Aktif</option>
-                    <option value="false">Nonaktif</option>
-                  </select>
+                  <Select defaultValue={watch("isActive") ? "true" : "false"} onValueChange={(v) => setValue("isActive", v === "true")}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Aktif</SelectItem>
+                      <SelectItem value="false">Nonaktif</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
 
             <div className="flex items-center justify-end gap-2 px-6 py-4 border-t">
               <Button type="button" variant="outline" onClick={() => handleDialogOpenChange(false)}>Batal</Button>
-              <Button type="submit" loading={isSubmitting}>Simpan</Button>
+              <Button type="submit" loading={saveMutation.isPending}>Simpan</Button>
             </div>
           </form>
         </DialogContent>
       </Dialog>
     </div>
   );
+}
+
+export default function Page() {
+  return <Suspense><CmsBannersPage /></Suspense>;
 }

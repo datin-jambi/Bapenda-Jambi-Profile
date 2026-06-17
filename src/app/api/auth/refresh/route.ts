@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyRefreshToken, signAccessToken, signRefreshToken } from "@/lib/auth";
+import { verifyRefreshToken, signAccessToken, signRefreshToken, ACCESS_TOKEN_MAX_AGE, REFRESH_TOKEN_MAX_AGE } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ApiResponse } from "@/lib/api-response";
 
@@ -56,14 +56,14 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 15 * 60,
+      maxAge: ACCESS_TOKEN_MAX_AGE,
       path: "/",
     });
     response.cookies.set("refresh_token", newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60,
+      maxAge: REFRESH_TOKEN_MAX_AGE,
       path: "/",
     });
 
@@ -119,14 +119,14 @@ export async function GET(request: NextRequest) {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 15 * 60,
+    maxAge: ACCESS_TOKEN_MAX_AGE,
     path: "/",
   });
   response.cookies.set("refresh_token", newRefreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60,
+    maxAge: REFRESH_TOKEN_MAX_AGE,
     path: "/",
   });
 

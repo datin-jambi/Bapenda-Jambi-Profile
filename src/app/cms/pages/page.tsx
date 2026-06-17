@@ -1,134 +1,253 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useCallback, useEffect, useState, Suspense } from "react";
 import api from "@/lib/axios";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Pencil } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { pageSchema, PageInput } from "@/lib/validations";
-import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
+import { formatDate } from "@/lib/utils";
+import { useAuthStore } from "@/store";
+import { ConfirmDialog } from "@/components/cms/confirm-dialog";
+import { DataTable, ColumnDef } from "@/components/cms/data-table";
+import { DataTableFilter } from "@/components/cms/data-table-filter";
+import { DataTablePagination } from "@/components/cms/data-table-pagination";
+import { useDebounce } from "@/hooks/use-debounce";
 
-export default function CmsPagesPage() {
+
+type PageItem = {
+  id: number;
+  title: string;
+  slug: string;
+  isPublished: boolean;
+  updatedAt: string;
+};
+
+type PageResponse = {
+  data: PageItem[];
+  meta: { page: number; limit: number; totalItems: number; totalPages: number };
+};
+
+function CmsPagesPage() {
+  const { user } = useAuthStore();
   const queryClient = useQueryClient();
-  const [open, setOpen] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const { data: pages, isLoading } = useQuery({
-    queryKey: ["cms-pages"],
-    queryFn: () => api.get("/cms/pages").then((r) => r.data.data),
+  const [searchInput, setSearchInput] = useState(searchParams.get("search") ?? "");
+  const [statusFilter, setStatusFilter] = useState(searchParams.get("status") ?? "all");
+  const [page, setPage] = useState(Number(searchParams.get("page") ?? 1));
+  const [pageSize, setPageSize] = useState(Number(searchParams.get("limit") ?? 10));
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+
+  const debouncedSearch = useDebounce(searchInput, 2000);
+  const isSearching = searchInput !== debouncedSearch;
+
+  const pushParams = useCallback(
+    (overrides: Record<string, string>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      Object.entries(overrides).forEach(([k, v]) => {
+        if (v && v !== "all") params.set(k, v);
+        else params.delete(k);
+      });
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router, pathname],
+  );
+
+  useEffect(() => {
+    pushParams({ search: debouncedSearch, page: "1" });
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
+
+  const { data, isLoading } = useQuery<PageResponse>({
+    queryKey: ["cms-pages", page, pageSize, debouncedSearch, statusFilter],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      params.set("page", String(page));
+      params.set("limit", String(pageSize));
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (statusFilter !== "all") params.set("status", statusFilter);
+      return api.get(`/cms/pages?${params.toString()}`).then((r) => r.data);
+    },
   });
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<PageInput>({
-    resolver: zodResolver(pageSchema),
-  });
+  const pages = data?.data ?? [];
+  const meta = data?.meta;
 
-  const saveMutation = useMutation({
-    mutationFn: (data: PageInput) => api.put(`/cms/pages/${editId}`, data),
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => api.delete(`/cms/pages/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cms-pages"] });
-      toast.success("Halaman berhasil diperbarui");
-      setOpen(false); reset(); setEditId(null);
+      toast.success("Halaman dihapus");
     },
-    onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal menyimpan"),
+    onError: (err: { response?: { data?: { message?: string } } }) =>
+      toast.error(err.response?.data?.message || "Gagal menghapus"),
   });
 
-  function openEdit(p: { id: string; title: string; slug: string; content: string; seoTitle?: string; seoDescription?: string; isPublished: boolean }) {
-    reset({ title: p.title, slug: p.slug, content: p.content, seoTitle: p.seoTitle, seoDescription: p.seoDescription, isPublished: p.isPublished });
-    setEditId(p.id);
-    setOpen(true);
+  const canManage = user?.role === "Super_Admin" || user?.role === "Admin";
+
+  function handleStatusFilter(val: string) {
+    setStatusFilter(val);
+    setPage(1);
+    pushParams({ status: val, page: "1" });
   }
 
-  const PAGE_LABELS: Record<string, string> = {
-    sejarah: "Sejarah",
-    "visi-misi": "Visi & Misi",
-    tupoksi: "Tupoksi",
-    "struktur-organisasi": "Struktur Organisasi",
-    pejabat: "Pejabat",
-  };
+  function handlePageChange(p: number) {
+    setPage(p);
+    pushParams({ page: String(p) });
+  }
+
+  function handlePageSizeChange(size: number) {
+    setPageSize(size);
+    setPage(1);
+    pushParams({ limit: String(size), page: "1" });
+  }
+
+  function handleReset() {
+    setSearchInput("");
+    setStatusFilter("all");
+    setPage(1);
+    router.replace(pathname, { scroll: false });
+  }
+
+  const columns: ColumnDef<PageItem>[] = [
+    {
+      key: "title",
+      header: "Judul",
+      render: (row) => (
+        <div>
+          <p className="font-medium text-sm">{row.title}</p>
+          <p className="text-xs text-muted-foreground">/{row.slug}</p>
+        </div>
+      ),
+    },
+    {
+      key: "slug",
+      header: "Slug",
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "hidden md:table-cell",
+      render: (row) => (
+        <span className="text-xs font-mono text-muted-foreground">/{row.slug}</span>
+      ),
+    },
+    {
+      key: "status",
+      header: "Status",
+      headerClassName: "w-32",
+      render: (row) => (
+        <Badge variant={row.isPublished ? "success" : "outline"}>
+          {row.isPublished ? "Dipublikasi" : "Draft"}
+        </Badge>
+      ),
+    },
+    {
+      key: "updatedAt",
+      header: "Diperbarui",
+      headerClassName: "hidden lg:table-cell w-40",
+      cellClassName: "hidden lg:table-cell",
+      render: (row) => (
+        <span className="text-xs text-muted-foreground">{formatDate(row.updatedAt)}</span>
+      ),
+    },
+    {
+      key: "actions",
+      header: "",
+      headerClassName: "w-24",
+      render: (row) => (
+        <div className="flex items-center justify-end gap-1">
+          <Button size="sm" variant="outline" asChild title="Edit">
+            <Link href={`/cms/pages/${row.id}/edit`}>
+              <Pencil className="h-3.5 w-3.5" />
+            </Link>
+          </Button>
+          {canManage && (
+            <Button
+              size="sm"
+              variant="destructive"
+              title="Hapus"
+              onClick={() => setDeleteId(row.id)}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          )}
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-primary">Manajemen Halaman</h1>
-        <p className="text-sm text-muted-foreground">Edit konten halaman statis website</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-primary">Manajemen Halaman</h1>
+          <p className="text-sm text-muted-foreground">Kelola konten halaman statis website</p>
+        </div>
+        {canManage && (
+          <Button asChild>
+            <Link href="/cms/pages/create">
+              <Plus className="mr-2 h-4 w-4" />Buat Halaman
+            </Link>
+          </Button>
+        )}
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-          {isLoading ? (
-            <div className="p-6 space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div>
-          ) : !pages?.length ? (
-            <div className="p-12 text-center text-muted-foreground">Belum ada halaman</div>
-          ) : (
-            <div className="divide-y">
-              {pages.map((p: { id: string; title: string; slug: string; isPublished: boolean }) => (
-                <div key={p.id} className="flex items-center justify-between px-6 py-4">
-                  <div>
-                    <p className="font-medium text-gray-800">{PAGE_LABELS[p.slug] || p.title}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">/{p.slug}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant={p.isPublished ? "success" : "outline"}>
-                      {p.isPublished ? "Dipublikasi" : "Draft"}
-                    </Badge>
-                    <Button size="sm" variant="outline" onClick={() => openEdit(p)}>
-                      <Pencil className="h-3 w-3 mr-1" />Edit
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <DataTableFilter
+        value={searchInput}
+        onChange={setSearchInput}
+        placeholder="Cari judul atau slug..."
+        isSearching={isSearching}
+        onReset={handleReset}
+        selects={[
+          {
+            value: statusFilter,
+            onChange: handleStatusFilter,
+            placeholder: "Status",
+            allLabel: "Semua Status",
+            options: [
+              { label: "Dipublikasi", value: "published" },
+              { label: "Draft", value: "draft" },
+            ],
+          },
+        ]}
+      />
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Edit Halaman</DialogTitle></DialogHeader>
-          <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="space-y-4">
-            <div className="space-y-2">
-              <Label>Judul</Label>
-              <Input {...register("title")} />
-              {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
-            </div>
-            <div className="space-y-2">
-              <Label>Konten (HTML)</Label>
-              <Textarea {...register("content")} rows={14} className="font-mono text-xs" />
-              {errors.content && <p className="text-xs text-destructive">{errors.content.message}</p>}
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>SEO Title</Label>
-                <Input {...register("seoTitle")} />
-              </div>
-              <div className="space-y-2">
-                <Label>Status</Label>
-                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" {...register("isPublished", { setValueAs: (v) => v === "true" || v === true })}>
-                  <option value="true">Dipublikasi</option>
-                  <option value="false">Draft</option>
-                </select>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>SEO Description</Label>
-              <Textarea {...register("seoDescription")} rows={2} />
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>Batal</Button>
-              <Button type="submit" loading={isSubmitting}>Simpan</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <DataTable
+        data={pages}
+        columns={columns}
+        isLoading={isLoading}
+        emptyMessage="Belum ada halaman ditemukan"
+      />
+
+      <DataTablePagination
+        page={page}
+        totalPages={meta?.totalPages ?? 1}
+        totalItems={meta?.totalItems ?? 0}
+        pageSize={pageSize}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
+      />
+
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={(v) => { if (!v) setDeleteId(null); }}
+        title="Hapus Halaman"
+        description="Halaman yang dihapus tidak dapat dikembalikan. Lanjutkan?"
+        confirmLabel="Ya, Hapus"
+        loading={deleteMutation.isPending}
+        onConfirm={() => {
+          if (deleteId) deleteMutation.mutate(deleteId, { onSettled: () => setDeleteId(null) });
+        }}
+      />
     </div>
   );
+}
+
+export default function Page() {
+  return <Suspense><CmsPagesPage /></Suspense>;
 }

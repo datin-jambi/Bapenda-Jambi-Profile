@@ -66,12 +66,16 @@ model Uptd {
 }
 
 model NewsCategory {
-  id        Int       @id @default(autoincrement())
-  name      String
-  slug      String    @unique
-  createdAt DateTime  @default(now())
-  deletedAt DateTime?
-  news      News[]
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String    @unique
+  description String?
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  news        News[]
 
   @@map("news_categories")
 }
@@ -119,6 +123,7 @@ model GalleryItem {
   galleryId   Int
   mediaType   MediaType @default(IMAGE)
   fileUrl     String
+  fileId      String?
   title       String?
   description String?
   sortOrder   Int       @default(0)
@@ -201,13 +206,17 @@ model Banner {
 }
 
 model Regulation {
-  id          Int       @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   title       String
+  slug        String        @unique
   description String?
   fileUrl     String
+  fileId      String?
+  fileName    String?
+  status      ContentStatus @default(DRAFT)
   publishedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   deletedAt   DateTime?
 
   @@map("regulations")

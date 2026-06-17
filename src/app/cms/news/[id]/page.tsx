@@ -11,14 +11,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { newsSchema, NewsInput } from "@/lib/validations";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, Send, CheckCircle, XCircle, Eye } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { ImageUpload } from "@/components/cms/image-upload";
+import { RichTextEditor } from "@/components/cms/rich-text-editor";
 import { useAuthStore } from "@/store";
 import { ContentStatus } from "@prisma/client";
 
@@ -45,12 +47,21 @@ export default function EditNewsPage() {
     queryFn: () => api.get("/cms/news-categories").then((r) => r.data.data),
   });
 
-  const { register, handleSubmit, setValue, watch, reset, formState: { errors, isSubmitting } } = useForm<NewsInput>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    watch,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<NewsInput>({
     resolver: zodResolver(newsSchema),
   });
 
   const thumbnailUrl = watch("thumbnailUrl");
   const titleValue = watch("title");
+  const contentValue = watch("content") ?? "";
 
   useEffect(() => {
     if (newsData) {
@@ -102,7 +113,7 @@ export default function EditNewsPage() {
   const canEdit = status === "DRAFT" || status === "REJECTED";
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/cms/news"><ArrowLeft className="h-4 w-4" /></Link>
@@ -149,80 +160,146 @@ export default function EditNewsPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit((data) => updateMutation.mutate(data))} className="space-y-6">
-        <Card>
-          <CardHeader><CardTitle className="text-base">Informasi Utama</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Judul Berita *</Label>
-              <Input {...register("title")} disabled={!canEdit} />
-              {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
-            </div>
-            <div className="space-y-2">
-              <Label>Kategori *</Label>
-              <Select
-                key={newsData?.categoryId}
-                value={String(watch("categoryId") || "")}
-                onValueChange={(v) => setValue("categoryId", parseInt(v, 10), { shouldDirty: true })}
-                disabled={!canEdit}
-              >
-                <SelectTrigger><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
-                <SelectContent>
-                  {categories?.map((cat: { id: number; name: string }) => (
-                    <SelectItem key={cat.id} value={String(cat.id)}>{cat.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.categoryId && <p className="text-xs text-destructive">{errors.categoryId.message}</p>}
-            </div>
-            <div className="space-y-2">
-              <Label>Ringkasan</Label>
-              <Textarea rows={3} {...register("excerpt")} disabled={!canEdit} />
-            </div>
-            <div className="space-y-2">
-              <Label>Konten *</Label>
-              <Textarea rows={14} {...register("content")} disabled={!canEdit} />
-              {errors.content && <p className="text-xs text-destructive">{errors.content.message}</p>}
-            </div>
-          </CardContent>
-        </Card>
+      <form onSubmit={handleSubmit((data) => updateMutation.mutate(data))}>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+          {/* ── LEFT: Editor ─────────────────────────────────── */}
+          <div className="space-y-4">
+            <Card>
+              <CardHeader><CardTitle className="text-base">Informasi Utama</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Judul Berita *</Label>
+                  <Input {...register("title")} disabled={!canEdit} />
+                  {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
+                </div>
 
-        <Card>
-          <CardHeader><CardTitle className="text-base">Gambar Thumbnail</CardTitle></CardHeader>
-          <CardContent>
-            <ImageUpload
-              value={thumbnailUrl || ""}
-              onChange={(url) => setValue("thumbnailUrl", url, { shouldDirty: true })}
-              folder="/news"
-              module="news"
-              label={titleValue || newsData?.title || "berita"}
-              disabled={!canEdit}
-            />
-          </CardContent>
-        </Card>
+                <div className="space-y-2">
+                  <Label>Kategori *</Label>
+                  <Controller
+                    name="categoryId"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        key={newsData?.categoryId}
+                        value={String(field.value || "")}
+                        onValueChange={(v) => field.onChange(parseInt(v, 10))}
+                        disabled={!canEdit}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
+                        <SelectContent>
+                          {categories?.map((cat: { id: number; name: string }) => (
+                            <SelectItem key={cat.id} value={String(cat.id)}>{cat.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors.categoryId && <p className="text-xs text-destructive">{errors.categoryId.message}</p>}
+                </div>
 
-        <Card>
-          <CardHeader><CardTitle className="text-base">SEO</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>SEO Title</Label>
-              <Input {...register("seoTitle")} disabled={!canEdit} />
-            </div>
-            <div className="space-y-2">
-              <Label>SEO Description</Label>
-              <Textarea rows={2} {...register("seoDescription")} disabled={!canEdit} />
-            </div>
-          </CardContent>
-        </Card>
+                <div className="space-y-2">
+                  <Label>Ringkasan</Label>
+                  <Textarea rows={3} {...register("excerpt")} disabled={!canEdit} />
+                </div>
 
-        {canEdit && (
-          <div className="flex justify-end gap-3">
-            <Button type="button" variant="outline" asChild>
-              <Link href="/cms/news">Batal</Link>
-            </Button>
-            <Button type="submit" loading={isSubmitting}>Simpan Perubahan</Button>
+                <div className="space-y-2">
+                  <Label>Konten *</Label>
+                  <Controller
+                    name="content"
+                    control={control}
+                    render={({ field }) => (
+                      <RichTextEditor
+                        value={field.value ?? ""}
+                        onChange={field.onChange}
+                        placeholder="Tulis konten berita di sini..."
+                        minHeight={320}
+                        disabled={!canEdit}
+                      />
+                    )}
+                  />
+                  {errors.content && <p className="text-xs text-destructive">{errors.content.message}</p>}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle className="text-base">Gambar Thumbnail</CardTitle></CardHeader>
+              <CardContent>
+                <ImageUpload
+                  value={thumbnailUrl || ""}
+                  onChange={(url) => setValue("thumbnailUrl", url, { shouldDirty: true })}
+                  folder="/news"
+                  module="news"
+                  label={titleValue || newsData?.title || "berita"}
+                  disabled={!canEdit}
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle className="text-base">SEO</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>SEO Title</Label>
+                  <Input {...register("seoTitle")} disabled={!canEdit} />
+                </div>
+                <div className="space-y-2">
+                  <Label>SEO Description</Label>
+                  <Textarea rows={2} {...register("seoDescription")} disabled={!canEdit} />
+                </div>
+              </CardContent>
+            </Card>
+
+            {canEdit && (
+              <div className="flex justify-end gap-3">
+                <Button type="button" variant="outline" asChild>
+                  <Link href="/cms/news">Batal</Link>
+                </Button>
+                <Button type="submit" loading={isSubmitting || updateMutation.isPending}>Simpan Perubahan</Button>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* ── RIGHT: Preview ───────────────────────────────── */}
+          <div className="xl:sticky xl:top-6">
+            <Card className="h-full">
+              <CardHeader className="border-b pb-3">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-base">Preview</CardTitle>
+                  {titleValue && (
+                    <span className="ml-auto text-xs text-muted-foreground truncate max-w-[200px]">
+                      {titleValue}
+                    </span>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4">
+                {thumbnailUrl && (
+                  <Image
+                    src={thumbnailUrl}
+                    alt={titleValue || "thumbnail"}
+                    width={800}
+                    height={192}
+                    className="w-full h-48 object-cover rounded-md mb-4"
+                    unoptimized
+                  />
+                )}
+                {contentValue ? (
+                  <div
+                    className="prose-content overflow-auto max-h-[60vh]"
+                    dangerouslySetInnerHTML={{ __html: contentValue }}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-2">
+                    <Eye className="h-10 w-10 text-gray-200" />
+                    <p className="text-sm">Preview akan muncul saat konten diisi</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </form>
     </div>
   );

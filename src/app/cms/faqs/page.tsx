@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, Suspense } from "react";
 import api from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ import { DataTableFilter } from "@/components/cms/data-table-filter";
 import { DataTable, ColumnDef } from "@/components/cms/data-table";
 import { DataTablePagination } from "@/components/cms/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
+
 
 type FaqCategory = { id: number; name: string; slug: string };
 
@@ -37,7 +38,7 @@ type FaqResponse = {
   meta: { page: number; limit: number; totalItems: number; totalPages: number };
 };
 
-export default function CmsFaqsPage() {
+function CmsFaqsPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -197,11 +198,11 @@ export default function CmsFaqsPage() {
       cellClassName: "text-right",
       render: (item) => (
         <div className="flex items-center justify-end gap-1">
-          <Button size="sm" variant="ghost" asChild title="Detail">
+          <Button size="sm" variant="outline" asChild title="Detail">
             <Link href={`/cms/faqs/${item.id}`}><Eye className="h-3 w-3" /></Link>
           </Button>
           {canManage && (
-            <Button size="sm" variant="ghost" asChild title="Edit">
+            <Button size="sm" variant="outline" asChild title="Edit">
               <Link href={`/cms/faqs/${item.id}/edit`}><Pencil className="h-3 w-3" /></Link>
             </Button>
           )}
@@ -287,4 +288,8 @@ export default function CmsFaqsPage() {
       />
     </div>
   );
+}
+
+export default function Page() {
+  return <Suspense><CmsFaqsPage /></Suspense>;
 }

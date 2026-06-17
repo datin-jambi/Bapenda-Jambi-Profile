@@ -10,8 +10,8 @@ const JWT_REFRESH_SECRET = new TextEncoder().encode(
   process.env.JWT_REFRESH_SECRET || "fallback-refresh-secret-min-32-chars!!"
 );
 
-export const ACCESS_TOKEN_EXPIRY = "15m";
-export const REFRESH_TOKEN_EXPIRY = "7d";
+export const ACCESS_TOKEN_EXPIRY = process.env.JWT_EXPIRES_IN ?? "15m";
+export const REFRESH_TOKEN_EXPIRY = process.env.JWT_REFRESH_EXPIRES_IN ?? "7d";
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -19,6 +19,24 @@ const COOKIE_OPTIONS = {
   sameSite: "lax" as const,
   path: "/",
 };
+
+// Parse duration string like "15m", "7d", "1h" to seconds
+function parseDurationToSeconds(duration: string): number {
+  const match = duration.match(/^(\d+)([smhd])$/);
+  if (!match) return 15 * 60;
+  const value = parseInt(match[1]);
+  const unit = match[2];
+  switch (unit) {
+    case "s": return value;
+    case "m": return value * 60;
+    case "h": return value * 60 * 60;
+    case "d": return value * 24 * 60 * 60;
+    default: return 15 * 60;
+  }
+}
+
+export const ACCESS_TOKEN_MAX_AGE = parseDurationToSeconds(ACCESS_TOKEN_EXPIRY);
+export const REFRESH_TOKEN_MAX_AGE = parseDurationToSeconds(REFRESH_TOKEN_EXPIRY);
 
 // ─── Token Generation ─────────────────────────────────────────────────────────
 
@@ -70,11 +88,11 @@ export async function setAuthCookies(accessToken: string, refreshToken: string) 
   const cookieStore = await cookies();
   cookieStore.set("access_token", accessToken, {
     ...COOKIE_OPTIONS,
-    maxAge: 15 * 60,
+    maxAge: ACCESS_TOKEN_MAX_AGE,
   });
   cookieStore.set("refresh_token", refreshToken, {
     ...COOKIE_OPTIONS,
-    maxAge: 7 * 24 * 60 * 60,
+    maxAge: REFRESH_TOKEN_MAX_AGE,
   });
 }
 

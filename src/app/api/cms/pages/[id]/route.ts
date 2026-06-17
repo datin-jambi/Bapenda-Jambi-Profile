@@ -32,3 +32,16 @@ export const PUT = withErrorHandler(async (request: NextRequest, ctx) => {
   const updated = await pageRepository.update(id, parsed.data);
   return ApiResponse.updated(updated, "Halaman berhasil diperbarui");
 });
+
+export const DELETE = withErrorHandler(async (request: NextRequest, ctx) => {
+  const user = await getAuthUser();
+  if (!user) throw new UnauthorizedError();
+  if (!hasPermission(user.role, "manage:pages")) throw new ForbiddenError();
+  const { id } = await resolveParams(ctx);
+
+  const page = await pageRepository.findById(id);
+  if (!page) throw new NotFoundError("Halaman tidak ditemukan");
+
+  await pageRepository.delete(id);
+  return ApiResponse.deleted("Halaman berhasil dihapus");
+});

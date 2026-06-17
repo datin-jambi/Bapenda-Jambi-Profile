@@ -7,10 +7,11 @@ import { Calendar, User, ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-interface Props { params: { slug: string } }
+interface Props { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const news = await prisma.news.findUnique({ where: { slug: params.slug } });
+  const { slug } = await params;
+  const news = await prisma.news.findUnique({ where: { slug } });
   if (!news) return { title: "Tidak Ditemukan" };
   return {
     title: news.seoTitle || news.title,
@@ -20,13 +21,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function NewsDetailPage({ params }: Props) {
+  const { slug } = await params;
   const news = await prisma.news.findUnique({
-    where: { slug: params.slug, status: "PUBLISHED" },
+    where: { slug, status: "PUBLISHED" },
     include: {
       category: true,
       author: { select: { name: true, avatarUrl: true } },
     },
-  });
+  }).catch(() => null);
 
   if (!news) notFound();
 

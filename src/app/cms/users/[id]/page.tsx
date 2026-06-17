@@ -120,11 +120,13 @@ export default function EditUserPage() {
               </div>
               <div className="space-y-2">
                 <Label>Jenis Kelamin</Label>
-                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" {...register("gender")}>
-                  <option value="">Pilih</option>
-                  <option value="Laki-laki">Laki-laki</option>
-                  <option value="Perempuan">Perempuan</option>
-                </select>
+                <Select defaultValue={userData?.gender} onValueChange={(v) => setValue("gender", v)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Laki-laki">Laki-laki</SelectItem>
+                    <SelectItem value="Perempuan">Perempuan</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             {me?.role === "Super_Admin" && (

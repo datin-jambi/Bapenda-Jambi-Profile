@@ -8,36 +8,49 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
-const NAV_LINKS = [
-  { href: "/", label: "Beranda" },
-  {
-    label: "Profil",
-    children: [
-      { href: "/profil/sejarah", label: "Sejarah" },
-      { href: "/profil/visi-misi", label: "Visi & Misi" },
-      { href: "/profil/tupoksi", label: "Tupoksi" },
-      { href: "/profil/struktur-organisasi", label: "Struktur Organisasi" },
-      { href: "/profil/pejabat", label: "Pejabat" },
-    ],
-  },
-  { href: "/layanan", label: "Layanan" },
-  { href: "/lokasi-uptd", label: "Lokasi UPTD" },
-  { href: "/regulasi", label: "Regulasi" },
-  {
-    label: "Publikasi",
-    children: [
-      { href: "/berita", label: "Berita" },
-      { href: "/galeri", label: "Galeri" },
-    ],
-  },
-  { href: "/faq", label: "FAQ" },
-  { href: "/kontak", label: "Kontak" },
-];
+type PageLink = { slug: string; title: string };
 
-export function PublicHeader() {
+interface PublicHeaderProps {
+  pages?: PageLink[];
+}
+
+export function PublicHeader({ pages = [] }: PublicHeaderProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  const profilChildren = pages.length > 0
+    ? pages.map((p) => ({ href: `/profil/${p.slug}`, label: p.title }))
+    : [
+        { href: "/profil/sejarah", label: "Sejarah" },
+        { href: "/profil/visi-misi", label: "Visi & Misi" },
+        { href: "/profil/tupoksi", label: "Tupoksi" },
+        { href: "/profil/struktur-organisasi", label: "Struktur Organisasi" },
+        { href: "/profil/pejabat", label: "Pejabat" },
+      ];
+
+  const NAV_LINKS = [
+    { href: "/", label: "Beranda" },
+    { label: "Profil", children: profilChildren },
+    {
+      label: "Layanan",
+      children: [
+        { href: "/layanan", label: "Informasi Layanan" },
+        { href: "/cek-pajak", label: "Cek Pajak Kendaraan" },
+      ],
+    },
+    { href: "/lokasi-uptd", label: "Lokasi UPTD" },
+    { href: "/regulasi", label: "Regulasi" },
+    {
+      label: "Publikasi",
+      children: [
+        { href: "/berita", label: "Berita" },
+        { href: "/galeri", label: "Galeri" },
+      ],
+    },
+    { href: "/faq", label: "FAQ" },
+    { href: "/kontak", label: "Kontak" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
