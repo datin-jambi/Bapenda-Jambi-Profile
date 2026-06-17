@@ -35,7 +35,13 @@
       "Bash(docker restart *)",
       "Bash(curl -s -o /dev/null -w \"prod:3031 -> %{http_code}\\\\n\" http://localhost:3031/api/health)",
       "Bash(curl -s -o /dev/null -w \"staging:3032 -> %{http_code}\\\\n\" http://localhost:3032/api/health)",
-      "Bash(curl -s -o /dev/null -w \"dev:3033 -> %{http_code}\\\\n\" http://localhost:3033/api/health)"
+      "Bash(curl -s -o /dev/null -w \"dev:3033 -> %{http_code}\\\\n\" http://localhost:3033/api/health)",
+      "Bash(docker run *)",
+      "Bash(curl -s -o /dev/null -w \"prod / -> %{http_code}\\\\n\" http://localhost:3031)",
+      "Bash(curl -s -o /dev/null -w \"staging / -> %{http_code}\\\\n\" http://localhost:3032)",
+      "Bash(curl -s -o /dev/null -w \"dev / -> %{http_code}\\\\n\" http://localhost:3033)",
+      "Bash(docker builder *)",
+      "Bash(docker build *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapeda-Jambi-Profile\\src\\app\\cms\\uptd",

@@ -2,22 +2,24 @@ services:
   app-staging:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.stage
     image: bapeda-profile:staging
     container_name: bapeda-profile-staging
     restart: unless-stopped
     ports:
-      - "3032:3000"
+      - "3032:3032"
     env_file:
       - .env.staging
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - staging-network
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3032/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 30s
+      start_period: 60s
 
 networks:
   staging-network:
