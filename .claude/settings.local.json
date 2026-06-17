@@ -11,10 +11,10 @@
       "Bash(node -e \"require\\('dotenv'\\).config\\(\\); console.log\\('DATABASE_URL:', process.env.DATABASE_URL\\)\")",
       "Bash(node -e \"const fs=require\\('fs'\\); const env=fs.readFileSync\\('.env','utf8'\\); const match=env.match\\(/DATABASE_URL=\\\\\"\\(.+\\)\\\\\"/\\); console.log\\('DATABASE_URL:', match?match[1]:'not found'\\)\")",
       "Bash(git checkout *)",
-      "Bash(cd \"c:\\\\Users\\\\ASUS\\\\Documents\\\\BPKPD\\\\Code\\\\Bapeda-Jambi-Profile\" && rm -rf .next && echo \"Cache cleared\")"
+      "Bash(cd \"c:\\\\Users\\\\ASUS\\\\Documents\\\\BPKPD\\\\Code\\\\Bapenda-Jambi-Profile\" && rm -rf .next && echo \"Cache cleared\")"
     ],
     "additionalDirectories": [
-      "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapeda-Jambi-Profile\\.next"
+      "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapenda-Jambi-Profile\\.next"
     ]
   }
 }
