@@ -17,20 +17,22 @@ function getRetryDelay(attempt: number) {
   return 1000 * Math.pow(2, attempt - 1);
 }
 
-export function FallbackImage({ src, fallback, alt, className, fill, ...props }: FallbackImageProps) {
+export function FallbackImage({ src, fallback, alt, className, fill, width, height, ...props }: FallbackImageProps) {
   const placeholder = PLACEHOLDERS[fallback];
-  const resolved = src && src.trim() !== "" ? src : placeholder;
+  const originalSrc = src && src.trim() !== "" ? src : placeholder;
 
-  const [imgSrc, setImgSrc] = useState<string>(resolved);
+  const [imgSrc, setImgSrc] = useState<string>(originalSrc);
   const [loading, setLoading] = useState(true);
-  const [retryCount, setRetryCount] = useState(0);
+  const retryCountRef = useRef(0);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const originalSrcRef = useRef(originalSrc);
 
   useEffect(() => {
-    setImgSrc(resolved);
+    originalSrcRef.current = originalSrc;
+    setImgSrc(originalSrc);
     setLoading(true);
-    setRetryCount(0);
-  }, [resolved]);
+    retryCountRef.current = 0;
+  }, [originalSrc]);
 
   useEffect(() => {
     return () => {
@@ -43,25 +45,22 @@ export function FallbackImage({ src, fallback, alt, className, fill, ...props }:
   }
 
   function handleError() {
-    const url = imgSrc;
+    const base = originalSrcRef.current;
 
-    if (retryCount < MAX_RETRIES && url !== placeholder) {
-      const attempt = retryCount + 1;
+    if (retryCountRef.current < MAX_RETRIES && base !== placeholder) {
+      const attempt = retryCountRef.current + 1;
       const delay = getRetryDelay(attempt);
-
       console.warn(
-        `[FallbackImage] Load failed — url: ${url}, retry: ${attempt}/${MAX_RETRIES}, delay: ${delay}ms`
+        `[FallbackImage] load failed — url: ${base}, retry ${attempt}/${MAX_RETRIES} in ${delay}ms`
       );
-
       retryTimerRef.current = setTimeout(() => {
-        setRetryCount(attempt);
-        const separator = url.includes("?") ? "&" : "?";
-        setImgSrc(`${url}${separator}_retry=${attempt}`);
+        retryCountRef.current = attempt;
+        setImgSrc(`${base}?_retry=${attempt}`);
       }, delay);
     } else {
-      if (url !== placeholder) {
-        console.error(
-          `[FallbackImage] Permanently failed after ${retryCount} retries — url: ${url}, using placeholder`
+      if (base !== placeholder) {
+        console.warn(
+          `[FallbackImage] permanently failed after ${retryCountRef.current} retries — url: ${base}, using placeholder`
         );
       }
       setImgSrc(placeholder);
@@ -69,27 +68,51 @@ export function FallbackImage({ src, fallback, alt, className, fill, ...props }:
     }
   }
 
+  // fill mode — skeleton is absolute overlay, fits the relative parent container
+  if (fill) {
+    return (
+      <>
+        {loading && (
+          <span
+            className="absolute inset-0 z-10 animate-pulse rounded bg-gray-200"
+            aria-hidden="true"
+          />
+        )}
+        <NextImage
+          {...props}
+          fill
+          src={imgSrc}
+          alt={alt}
+          className={cn(className, loading ? "opacity-0" : "opacity-100 transition-opacity duration-300")}
+          onLoad={handleLoad}
+          onError={handleError}
+        />
+      </>
+    );
+  }
+
+  // fixed-size mode (e.g. inside table cells) — skeleton wraps image and matches its dimensions exactly
   return (
-    <>
-      {/* Skeleton shown while image is loading */}
+    <span
+      className="relative inline-block overflow-hidden rounded"
+      style={{ width: Number(width), height: Number(height) }}
+    >
       {loading && (
         <span
-          className="absolute inset-0 z-10 animate-pulse bg-gray-200"
+          className="absolute inset-0 animate-pulse bg-gray-200"
           aria-hidden="true"
         />
       )}
       <NextImage
         {...props}
-        fill={fill}
+        width={width}
+        height={height}
         src={imgSrc}
         alt={alt}
-        className={cn(
-          className,
-          loading ? "opacity-0" : "opacity-100 transition-opacity duration-300"
-        )}
+        className={cn(className, loading ? "opacity-0" : "opacity-100 transition-opacity duration-300")}
         onLoad={handleLoad}
         onError={handleError}
       />
-    </>
+    </span>
   );
 }
