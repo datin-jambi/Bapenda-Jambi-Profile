@@ -50,8 +50,8 @@ export default async function HomePage() {
         include: { category: { select: { name: true } } },
       }),
     ]);
-  } catch {
-    // DB unavailable at build time — render with empty data
+  } catch (err) {
+    console.error("[HomePage] DB query failed — rendering with empty data:", err);
   }
 
   return (
