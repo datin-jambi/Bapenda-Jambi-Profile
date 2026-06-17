@@ -36,7 +36,7 @@ Sistem manajemen konten (CMS) untuk website profil BAPENDA (Badan Pendapatan Dae
 
 ```bash
 git clone <repo-url>
-cd bapeda-jambi-profile
+cd bapenda-jambi-profile
 ```
 
 ### Install dependencies

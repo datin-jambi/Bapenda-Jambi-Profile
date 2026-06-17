@@ -8,8 +8,8 @@ services:
         NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-build-time-placeholder-not-for-production}
         NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT: "https://ik.imagekit.io/bapendajambi"
         NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY: "public_BZ7r8XP67ODQGGmLmAGXdrf8Kjw="
-    image: bapeda-profile
-    container_name: bapeda-profile
+    image: bapenda-profile
+    container_name: bapenda-profile
     restart: always
     ports:
       - "0.0.0.0:3031:3031"
