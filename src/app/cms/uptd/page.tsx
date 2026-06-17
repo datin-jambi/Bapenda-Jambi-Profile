@@ -471,169 +471,171 @@ function CmsUptdPage() {
           <DialogHeader>
             <DialogTitle>{editId ? "Edit UPTD" : "Tambah UPTD Baru"}</DialogTitle>
           </DialogHeader>
+
           <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="space-y-5">
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+              {/* Identitas */}
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Identitas</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Kode UPTD *</Label>
+                    <Input placeholder="UPTD-001" {...register("code")} />
+                    {errors.code && <p className="text-xs text-destructive">{errors.code.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Status</Label>
+                    <Select
+                      {...register("isActive", { setValueAs: (v) => v === "true" || v === true })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="true">Aktif</SelectItem>
+                        <SelectItem value="false">Nonaktif</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-2 pt-2">
+                  <Label>Nama UPTD *</Label>
+                  <Input placeholder="UPTD Samsat Kota Jambi" {...register("name")} />
+                  {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                </div>
+                <div className="space-y-2 pt-2">
+                  <Label>Nama Kepala</Label>
+                  <Input placeholder="Dr. H. Ahmad, M.Si" {...register("headName")} />
+                </div>
+                <div className="space-y-2 pt-2">
+                  <Label>Deskripsi</Label>
+                  <Textarea placeholder="Deskripsi singkat UPTD..." rows={2} {...register("description")} />
+                </div>
+              </div>
 
-            {/* Identitas */}
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Identitas</p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Kode UPTD *</Label>
-                  <Input placeholder="UPTD-001" {...register("code")} />
-                  {errors.code && <p className="text-xs text-destructive">{errors.code.message}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label>Status</Label>
-                  <Select
-                    {...register("isActive", { setValueAs: (v) => v === "true" || v === true })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">Aktif</SelectItem>
-                      <SelectItem value="false">Nonaktif</SelectItem>
-                    </SelectContent>
-                  </Select>
+              {/* Kontak */}
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Kontak</p>
+                <div className="grid grid-cols-2 gap-4 pt-1">
+                  <div className="space-y-2">
+                    <Label>Telepon</Label>
+                    <Input placeholder="0741-xxxxx" {...register("phone")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input type="email" placeholder="uptd@bapenda.go.id" {...register("email")} />
+                    {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+                  </div>
                 </div>
               </div>
-              <div className="space-y-2 pt-2">
-                <Label>Nama UPTD *</Label>
-                <Input placeholder="UPTD Samsat Kota Jambi" {...register("name")} />
-                {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-              </div>
-              <div className="space-y-2 pt-2">
-                <Label>Nama Kepala</Label>
-                <Input placeholder="Dr. H. Ahmad, M.Si" {...register("headName")} />
-              </div>
-              <div className="space-y-2 pt-2">
-                <Label>Deskripsi</Label>
-                <Textarea placeholder="Deskripsi singkat UPTD..." rows={2} {...register("description")} />
-              </div>
-            </div>
 
-            {/* Kontak */}
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Kontak</p>
-              <div className="grid grid-cols-2 gap-4 pt-1">
-                <div className="space-y-2">
-                  <Label>Telepon</Label>
-                  <Input placeholder="0741-xxxxx" {...register("phone")} />
+              {/* Wilayah */}
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Wilayah</p>
+                <div className="space-y-2 pt-1">
+                  <Label>Alamat</Label>
+                  <Textarea placeholder="Alamat lengkap UPTD" rows={2} {...register("address")} />
                 </div>
-                <div className="space-y-2">
-                  <Label>Email</Label>
-                  <Input type="email" placeholder="uptd@bapenda.go.id" {...register("email")} />
-                  {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
-                </div>
-              </div>
-            </div>
-
-            {/* Wilayah */}
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Wilayah</p>
-              <div className="space-y-2 pt-1">
-                <Label>Alamat</Label>
-                <Textarea placeholder="Alamat lengkap UPTD" rows={2} {...register("address")} />
-              </div>
-              <div className="grid grid-cols-2 gap-4 pt-2">
-                <div className="space-y-2">
-                  <Label>Provinsi</Label>
-                  <Input placeholder="Jambi" {...register("province")} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Kota / Kabupaten</Label>
-                  <Input placeholder="Kota Jambi" {...register("city")} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Kecamatan</Label>
-                  <Input placeholder="Pasar Jambi" {...register("district")} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Kelurahan</Label>
-                  <Input placeholder="Kelurahan" {...register("subDistrict")} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Kode Pos</Label>
-                  <Input placeholder="36111" {...register("postalCode")} />
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="space-y-2">
+                    <Label>Provinsi</Label>
+                    <Input placeholder="Jambi" {...register("province")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Kota / Kabupaten</Label>
+                    <Input placeholder="Kota Jambi" {...register("city")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Kecamatan</Label>
+                    <Input placeholder="Pasar Jambi" {...register("district")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Kelurahan</Label>
+                    <Input placeholder="Kelurahan" {...register("subDistrict")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Kode Pos</Label>
+                    <Input placeholder="36111" {...register("postalCode")} />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Lokasi */}
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Lokasi & Peta</p>
+              {/* Lokasi */}
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Lokasi & Peta</p>
 
-              {/* Opsi A: Parse dari Google Maps URL */}
-              <div className="space-y-2 pt-1">
-                <Label>Link Google Maps</Label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Tempel link Google Maps di sini..."
-                    {...register("googleMapsUrl")}
+                {/* Opsi A: Parse dari Google Maps URL */}
+                <div className="space-y-2 pt-1">
+                  <Label>Link Google Maps</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Tempel link Google Maps di sini..."
+                      {...register("googleMapsUrl")}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="shrink-0"
+                      onClick={() => {
+                        const url = (watch("googleMapsUrl") ?? "");
+                        const coords = parseGoogleMapsUrl(url);
+                        if (coords) {
+                          setValue("latitude", coords.lat);
+                          setValue("longitude", coords.lng);
+                          toast.success("Koordinat berhasil diambil dari link Google Maps");
+                        } else {
+                          toast.error("Format link tidak dikenali. Coba salin koordinat manual.");
+                        }
+                      }}
+                    >
+                      Ambil Koordinat
+                    </Button>
+                  </div>
+                  {errors.googleMapsUrl && <p className="text-xs text-destructive">{errors.googleMapsUrl.message}</p>}
+                  <p className="text-xs text-muted-foreground">
+                    Salin link dari Google Maps → Bagikan → Salin tautan, lalu klik &quot;Ambil Koordinat&quot;.
+                  </p>
+                </div>
+
+                {/* Opsi C: Manual input */}
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="space-y-2">
+                    <Label>Latitude</Label>
+                    <Input
+                      type="number"
+                      step="any"
+                      placeholder="-1.6101"
+                      {...register("latitude", { valueAsNumber: true })}
+                    />
+                    {errors.latitude && <p className="text-xs text-destructive">{errors.latitude.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Longitude</Label>
+                    <Input
+                      type="number"
+                      step="any"
+                      placeholder="103.6131"
+                      {...register("longitude", { valueAsNumber: true })}
+                    />
+                    {errors.longitude && <p className="text-xs text-destructive">{errors.longitude.message}</p>}
+                  </div>
+                </div>
+
+                {/* Map preview iframe */}
+                <MapPreview lat={watchedLat} lng={watchedLng} />
+
+                {/* Show on public map toggle */}
+                <div className="flex items-center gap-3 pt-2">
+                  <input
+                    id="showOnPublicMap"
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-input"
+                    {...register("showOnPublicMap")}
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="shrink-0"
-                    onClick={() => {
-                      const url = (watch("googleMapsUrl") ?? "");
-                      const coords = parseGoogleMapsUrl(url);
-                      if (coords) {
-                        setValue("latitude", coords.lat);
-                        setValue("longitude", coords.lng);
-                        toast.success("Koordinat berhasil diambil dari link Google Maps");
-                      } else {
-                        toast.error("Format link tidak dikenali. Coba salin koordinat manual.");
-                      }
-                    }}
-                  >
-                    Ambil Koordinat
-                  </Button>
+                  <Label htmlFor="showOnPublicMap" className="cursor-pointer">
+                    Tampilkan pada peta publik website
+                  </Label>
                 </div>
-                {errors.googleMapsUrl && <p className="text-xs text-destructive">{errors.googleMapsUrl.message}</p>}
-                <p className="text-xs text-muted-foreground">
-                  Salin link dari Google Maps → Bagikan → Salin tautan, lalu klik &quot;Ambil Koordinat&quot;.
-                </p>
-              </div>
-
-              {/* Opsi C: Manual input */}
-              <div className="grid grid-cols-2 gap-4 pt-2">
-                <div className="space-y-2">
-                  <Label>Latitude</Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    placeholder="-1.6101"
-                    {...register("latitude", { valueAsNumber: true })}
-                  />
-                  {errors.latitude && <p className="text-xs text-destructive">{errors.latitude.message}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label>Longitude</Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    placeholder="103.6131"
-                    {...register("longitude", { valueAsNumber: true })}
-                  />
-                  {errors.longitude && <p className="text-xs text-destructive">{errors.longitude.message}</p>}
-                </div>
-              </div>
-
-              {/* Map preview iframe */}
-              <MapPreview lat={watchedLat} lng={watchedLng} />
-
-              {/* Show on public map toggle */}
-              <div className="flex items-center gap-3 pt-2">
-                <input
-                  id="showOnPublicMap"
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-input"
-                  {...register("showOnPublicMap")}
-                />
-                <Label htmlFor="showOnPublicMap" className="cursor-pointer">
-                  Tampilkan pada peta publik website
-                </Label>
               </div>
             </div>
 
