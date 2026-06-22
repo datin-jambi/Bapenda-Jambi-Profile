@@ -41,7 +41,12 @@ export function HeroSection({ banners }: { banners: Banner[] }) {
 
   return (
     <section className="relative h-[500px] md:h-[580px] overflow-hidden">
-      {banners.map((banner, i) => (
+      {banners.map((banner, i) => {
+        // Only render current, previous, and next slides — avoid fetching all at once
+        const prevIdx = (current - 1 + banners.length) % banners.length;
+        const nextIdx = (current + 1) % banners.length;
+        const shouldRender = i === current || i === prevIdx || i === nextIdx || i === 0;
+        return (
         <div
           key={banner.id}
           className={cn(
@@ -50,6 +55,7 @@ export function HeroSection({ banners }: { banners: Banner[] }) {
           )}
         >
           <div className="absolute inset-0 bg-primary/60 z-10" />
+          {shouldRender && (
           <FallbackImage
             src={banner.imageUrl}
             alt={banner.title}
@@ -58,6 +64,7 @@ export function HeroSection({ banners }: { banners: Banner[] }) {
             className="object-cover"
             priority={i === 0}
           />
+          )}
           <div className="relative z-20 h-full flex items-center">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
               <div className="max-w-2xl">
@@ -76,7 +83,8 @@ export function HeroSection({ banners }: { banners: Banner[] }) {
             </div>
           </div>
         </div>
-      ))}
+        );
+      })}
 
       {banners.length > 1 && (
         <>

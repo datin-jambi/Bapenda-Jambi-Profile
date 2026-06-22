@@ -13,24 +13,30 @@ interface FallbackImageProps extends Omit<ImageProps, "src"> {
 const MAX_RETRIES = 3;
 
 function getRetryDelay(attempt: number) {
-  // 1s → 2s → 4s
   return 1000 * Math.pow(2, attempt - 1);
+}
+
+function isLocalPath(src: string) {
+  return src.startsWith("/") && !src.startsWith("//");
 }
 
 export function FallbackImage({ src, fallback, alt, className, fill, width, height, ...props }: FallbackImageProps) {
   const placeholder = PLACEHOLDERS[fallback];
   const originalSrc = src && src.trim() !== "" ? src : placeholder;
 
+  // Start as loaded for local placeholders to avoid flicker on fallback render
+  const isLocal = isLocalPath(originalSrc);
   const [imgSrc, setImgSrc] = useState<string>(originalSrc);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!isLocal);
   const retryCountRef = useRef(0);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const originalSrcRef = useRef(originalSrc);
 
   useEffect(() => {
+    if (originalSrcRef.current === originalSrc) return;
     originalSrcRef.current = originalSrc;
     setImgSrc(originalSrc);
-    setLoading(true);
+    setLoading(!isLocalPath(originalSrc));
     retryCountRef.current = 0;
   }, [originalSrc]);
 
@@ -50,25 +56,16 @@ export function FallbackImage({ src, fallback, alt, className, fill, width, heig
     if (retryCountRef.current < MAX_RETRIES && base !== placeholder) {
       const attempt = retryCountRef.current + 1;
       const delay = getRetryDelay(attempt);
-      console.warn(
-        `[FallbackImage] load failed — url: ${base}, retry ${attempt}/${MAX_RETRIES} in ${delay}ms`
-      );
       retryTimerRef.current = setTimeout(() => {
         retryCountRef.current = attempt;
         setImgSrc(`${base}?_retry=${attempt}`);
       }, delay);
     } else {
-      if (base !== placeholder) {
-        console.warn(
-          `[FallbackImage] permanently failed after ${retryCountRef.current} retries — url: ${base}, using placeholder`
-        );
-      }
       setImgSrc(placeholder);
       setLoading(false);
     }
   }
 
-  // fill mode — skeleton is absolute overlay, fits the relative parent container
   if (fill) {
     return (
       <>
@@ -83,6 +80,7 @@ export function FallbackImage({ src, fallback, alt, className, fill, width, heig
           fill
           src={imgSrc}
           alt={alt}
+          unoptimized={isLocalPath(imgSrc)}
           className={cn(className, loading ? "opacity-0" : "opacity-100 transition-opacity duration-300")}
           onLoad={handleLoad}
           onError={handleError}
@@ -91,7 +89,6 @@ export function FallbackImage({ src, fallback, alt, className, fill, width, heig
     );
   }
 
-  // fixed-size mode (e.g. inside table cells) — skeleton wraps image and matches its dimensions exactly
   return (
     <span
       className="relative inline-block overflow-hidden rounded"
@@ -109,6 +106,7 @@ export function FallbackImage({ src, fallback, alt, className, fill, width, heig
         height={height}
         src={imgSrc}
         alt={alt}
+        unoptimized={isLocalPath(imgSrc)}
         className={cn(className, loading ? "opacity-0" : "opacity-100 transition-opacity duration-300")}
         onLoad={handleLoad}
         onError={handleError}
