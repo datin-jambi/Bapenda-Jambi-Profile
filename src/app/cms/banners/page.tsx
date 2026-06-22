@@ -3,8 +3,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback, useEffect, useState, Suspense } from "react";
+import Image from "next/image";
 import api from "@/lib/axios";
-import { FallbackImage } from "@/components/ui/fallback-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -193,7 +193,17 @@ function CmsBannersPage() {
     {
       key: "imageUrl", header: "Gambar", render: (b) =>
         b.imageUrl ? (
-          <FallbackImage src={b.imageUrl} alt={b.title} fallback="banner" width={100} height={60} className="rounded object-cover" />
+          <div className="w-[100px] h-[60px] rounded overflow-hidden bg-gray-100 flex-shrink-0">
+            <Image
+              src={b.imageUrl}
+              alt={b.title}
+              width={100}
+              height={60}
+              unoptimized
+              className="w-full h-full object-cover"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+            />
+          </div>
         ) : (
           <span className="text-xs text-muted-foreground">Tidak ada gambar</span>
         ),
