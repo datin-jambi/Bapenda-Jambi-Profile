@@ -193,7 +193,7 @@ function CmsBannersPage() {
     {
       key: "imageUrl", header: "Gambar", render: (b) =>
         b.imageUrl ? (
-          <div className="w-[100px] h-[60px] rounded overflow-hidden bg-gray-100 flex-shrink-0">
+          <div className="w-[100px] h-[60px] rounded overflow-hidden bg-gray-100 flex-shrink-0 relative">
             <Image
               src={b.imageUrl}
               alt={b.title}
@@ -201,7 +201,18 @@ function CmsBannersPage() {
               height={60}
               unoptimized
               className="w-full h-full object-cover"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+              onError={(e) => {
+                const img = e.currentTarget;
+                img.style.display = "none";
+                const parent = img.parentElement;
+                if (parent && !parent.querySelector("[data-fallback]")) {
+                  const fb = document.createElement("div");
+                  fb.dataset.fallback = "1";
+                  fb.className = "absolute inset-0 flex items-center justify-center text-xs text-muted-foreground bg-gray-100";
+                  fb.textContent = "Gagal muat";
+                  parent.appendChild(fb);
+                }
+              }}
             />
           </div>
         ) : (

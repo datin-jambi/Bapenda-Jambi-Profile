@@ -38,7 +38,9 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch {
         processQueue(false);
-        window.location.href = "/cms/login";
+        if (typeof window !== "undefined") {
+          window.location.href = "/cms/login";
+        }
         return Promise.reject(error);
       } finally {
         isRefreshing = false;

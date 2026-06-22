@@ -90,6 +90,8 @@ function formatDate(iso: string): string {
 
 function CmsUsersPage() {
   const { user: me } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
@@ -156,7 +158,7 @@ function CmsUsersPage() {
 
   const users = data?.data ?? [];
   const meta = data?.meta;
-  const isSuperAdmin = me?.role === "Super_Admin";
+  const isSuperAdmin = mounted && me?.role === "Super_Admin";
 
   // ── Mutations ──────────────────────────────────────────────────────────────
 
