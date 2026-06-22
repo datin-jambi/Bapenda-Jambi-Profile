@@ -11,8 +11,8 @@ interface NewsItem {
   slug: string;
   excerpt?: string | null;
   thumbnailUrl?: string | null;
-  publishedAt?: Date | null;
-  createdAt: Date;
+  publishedAt?: Date | string | null;
+  createdAt: Date | string;
   category: { name: string; slug: string };
   author: { name: string };
 }

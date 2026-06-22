@@ -1,58 +1,81 @@
-import { prisma } from "@/lib/prisma";
-import { settingRepository } from "@/repositories/content.repository";
+"use client";
+
+import { useEffect, useState } from "react";
 import { HeroSection } from "@/components/public/hero-section";
 import { QuickServicesSection } from "@/components/public/quick-services";
 import { LatestNewsSection } from "@/components/public/latest-news";
 import { StatisticsSection } from "@/components/public/statistics";
 import { GallerySection } from "@/components/public/gallery-section";
 import { FaqSection } from "@/components/public/faq-section";
-import type { Metadata } from "next";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const settings = await settingRepository.findAll().catch(() => ({} as Record<string, string>));
-  return {
-    title: settings.site_name || "BAPENDA Provinsi Jambi",
-    description: settings.site_description || "Website Resmi Badan Pendapatan Daerah Provinsi Jambi",
-    keywords: settings.site_keywords,
-    openGraph: {
-      title: settings.site_name,
-      description: settings.site_description,
-      type: "website",
-    },
-  };
+interface Banner {
+  id: number;
+  title: string;
+  description?: string | null;
+  imageUrl: string;
+  buttonText?: string | null;
+  buttonUrl?: string | null;
 }
 
-export default async function HomePage() {
-  let banners: Awaited<ReturnType<typeof prisma.banner.findMany>> = [];
-  let news: Awaited<ReturnType<typeof prisma.news.findMany<{ include: { category: { select: { name: true; slug: true } }; author: { select: { name: true } } } }>>> = [];
-  let galleries: Awaited<ReturnType<typeof prisma.gallery.findMany<{ include: { _count: { select: { items: true } } } }>>> = [];
-  let faqs: Awaited<ReturnType<typeof prisma.faq.findMany<{ include: { category: { select: { name: true } } } }>>> = [];
+interface NewsItem {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  thumbnailUrl?: string | null;
+  publishedAt?: string | null;
+  createdAt: string;
+  category: { name: string; slug: string };
+  author: { name: string };
+}
 
+interface GalleryItem {
+  id: number;
+  title: string;
+  coverImage?: string | null;
+  _count: { items: number };
+}
+
+interface FaqItem {
+  id: number;
+  question: string;
+  answer: string;
+  sortOrder: number;
+  viewCount: number;
+  category: { name: string } | null;
+}
+
+async function fetchJson<T>(url: string): Promise<T[]> {
   try {
-    [banners, news, galleries, faqs] = await Promise.all([
-      prisma.banner.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" } }),
-      prisma.news.findMany({
-        where: { status: "PUBLISHED" },
-        take: 6,
-        orderBy: { publishedAt: "desc" },
-        include: { category: { select: { name: true, slug: true } }, author: { select: { name: true } } },
-      }),
-      prisma.gallery.findMany({
-        where: { status: "PUBLISHED" },
-        take: 6,
-        orderBy: { createdAt: "desc" },
-        include: { _count: { select: { items: true } } },
-      }),
-      prisma.faq.findMany({
-        where: { isPublished: true },
-        take: 5,
-        orderBy: [{ viewCount: "desc" }, { sortOrder: "asc" }],
-        include: { category: { select: { name: true } } },
-      }),
-    ]);
-  } catch (err) {
-    console.error("[HomePage] DB query failed — rendering with empty data:", err);
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data ?? [];
+  } catch {
+    return [];
   }
+}
+
+export default function HomePage() {
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [galleries, setGalleries] = useState<GalleryItem[]>([]);
+  const [faqs, setFaqs] = useState<FaqItem[]>([]);
+
+  useEffect(() => {
+    const base = window.location.origin;
+    Promise.all([
+      fetchJson<Banner>(`${base}/api/public/banners`),
+      fetchJson<NewsItem>(`${base}/api/public/news?limit=6`),
+      fetchJson<GalleryItem>(`${base}/api/public/galleries?limit=6`),
+      fetchJson<FaqItem>(`${base}/api/public/faqs`),
+    ]).then(([b, n, g, f]) => {
+      setBanners(b);
+      setNews(n);
+      setGalleries(g);
+      setFaqs(f);
+    });
+  }, []);
 
   return (
     <>
