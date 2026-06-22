@@ -11,7 +11,7 @@ interface FaqItem {
   id: number;
   question: string;
   answer: string;
-  category: { name: string };
+  category: { name: string } | null;
 }
 
 export function FaqSection({ faqs }: { faqs: FaqItem[] }) {
