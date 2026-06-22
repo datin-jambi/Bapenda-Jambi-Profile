@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
+import { prisma } from "@/lib/prisma";
+import { faqRepository } from "@/repositories/content.repository";
 import { FaqPageClient } from "./faq-client";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Pusat Bantuan (FAQ) | BAPENDA Provinsi Jambi",
@@ -15,28 +18,15 @@ export const metadata: Metadata = {
   },
 };
 
-async function getBaseUrl() {
-  const headersList = await headers();
-  const host = headersList.get("host") ?? "localhost:3000";
-  const proto = process.env.NODE_ENV === "production" ? "https" : "http";
-  return `${proto}://${host}`;
-}
-
 export default async function FaqPage() {
-  const base = await getBaseUrl();
-
-  const [categoriesRes, faqsRes] = await Promise.all([
-    fetch(`${base}/api/public/faq-categories`, { cache: "no-store" }),
-    fetch(`${base}/api/public/faqs`, { cache: "no-store" }),
+  const [categories, faqs] = await Promise.all([
+    prisma.faqCategory.findMany({
+      where: { deletedAt: null, isActive: true },
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      select: { id: true, name: true, slug: true, description: true },
+    }),
+    faqRepository.findPublished({}),
   ]);
-
-  const [categoriesJson, faqsJson] = await Promise.all([
-    categoriesRes.json(),
-    faqsRes.json(),
-  ]);
-
-  const categories = categoriesJson.data ?? [];
-  const faqs = faqsJson.data ?? [];
 
   return (
     <>

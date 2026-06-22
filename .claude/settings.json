@@ -41,7 +41,14 @@
       "Bash(curl -s -o /dev/null -w \"staging / -> %{http_code}\\\\n\" http://localhost:3032)",
       "Bash(curl -s -o /dev/null -w \"dev / -> %{http_code}\\\\n\" http://localhost:3033)",
       "Bash(docker builder *)",
-      "Bash(docker build *)"
+      "Bash(docker build *)",
+      "Bash(node .next/standalone/server.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/faq)",
+      "Bash(curl -s http://localhost:3000/faq)",
+      "Bash(curl -s http://localhost:3000/api/public/faqs)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(cmd //c \"taskkill /F /IM node.exe\")",
+      "Bash(kill -9 787 812 834 823)"
     ],
     "additionalDirectories": [
       "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapenda-Jambi-Profile\\src\\app\\cms\\uptd",
