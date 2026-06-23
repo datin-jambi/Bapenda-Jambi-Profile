@@ -436,22 +436,22 @@ function CmsUsersPage() {
           </DialogHeader>
           <form onSubmit={handleCreateSubmit((d) => createMutation.mutate(d))} className="space-y-4">
             <div className="space-y-2">
-              <Label>Nama Lengkap *</Label>
+              <Label>Nama Lengkap <span className="text-red-500">*</span></Label>
               <Input placeholder="Nama lengkap" {...createRegister("name")} />
               {createErrors.name && <p className="text-xs text-destructive">{createErrors.name.message}</p>}
             </div>
             <div className="space-y-2">
-              <Label>Email *</Label>
+              <Label>Email <span className="text-red-500">*</span></Label>
               <Input type="email" placeholder="email@bapenda.go.id" {...createRegister("email")} />
               {createErrors.email && <p className="text-xs text-destructive">{createErrors.email.message}</p>}
             </div>
             <div className="space-y-2">
-              <Label>Password *</Label>
+              <Label>Password <span className="text-red-500">*</span></Label>
               <Input type="password" placeholder="Min. 8 karakter" {...createRegister("password")} />
               {createErrors.password && <p className="text-xs text-destructive">{createErrors.password.message}</p>}
             </div>
             <div className="space-y-2">
-              <Label>Role *</Label>
+              <Label>Role <span className="text-red-500">*</span></Label>
               <Select defaultValue="Editor" onValueChange={(v) => createSetValue("role", v as Role)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>

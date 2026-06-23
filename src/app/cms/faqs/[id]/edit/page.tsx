@@ -111,7 +111,7 @@ export default function EditFaqPage() {
           <CardHeader><CardTitle className="text-base">Informasi FAQ</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Kategori *</Label>
+              <Label>Kategori <span className="text-red-500">*</span></Label>
               <Select
                 key={`cat-${currentCategoryId ?? "none"}`}
                 value={currentCategoryId ? String(currentCategoryId) : ""}
@@ -129,7 +129,7 @@ export default function EditFaqPage() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label>Pertanyaan *</Label>
+                <Label>Pertanyaan <span className="text-red-500">*</span></Label>
                 <span className="text-xs text-muted-foreground">{questionValue.length}/500</span>
               </div>
               <Textarea
@@ -142,7 +142,7 @@ export default function EditFaqPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Jawaban *</Label>
+              <Label>Jawaban <span className="text-red-500">*</span></Label>
               <Textarea
                 placeholder="Tulis jawaban yang jelas dan lengkap..."
                 rows={8}

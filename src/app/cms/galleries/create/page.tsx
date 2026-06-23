@@ -51,7 +51,7 @@ export default function CreateGalleryPage() {
           <CardHeader><CardTitle className="text-base">Informasi Galeri</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Judul *</Label>
+              <Label>Judul <span className="text-red-500">*</span></Label>
               <Input placeholder="Judul galeri" {...register("title")} />
               {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
             </div>
@@ -62,6 +62,7 @@ export default function CreateGalleryPage() {
             <div className="space-y-2">
               <Label>Gambar Cover</Label>
               <ImageUpload value={coverImage || ""} onChange={(url) => setValue("coverImage", url)} folder="/gallery" />
+              <span className="text-xs text-muted-foreground">Ukuran Gambar: 800x600px (Rasio 4:3)</span>
             </div>
           </CardContent>
         </Card>

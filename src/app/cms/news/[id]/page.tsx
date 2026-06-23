@@ -168,13 +168,13 @@ export default function EditNewsPage() {
               <CardHeader><CardTitle className="text-base">Informasi Utama</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Judul Berita *</Label>
+                  <Label>Judul Berita <span className="text-red-500">*</span></Label>
                   <Input {...register("title")} disabled={!canEdit} />
                   {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Kategori *</Label>
+                  <Label>Kategori <span className="text-red-500">*</span></Label>
                   <Controller
                     name="categoryId"
                     control={control}
@@ -203,7 +203,7 @@ export default function EditNewsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Konten *</Label>
+                  <Label>Konten <span className="text-red-500">*</span></Label>
                   <Controller
                     name="content"
                     control={control}
@@ -233,6 +233,7 @@ export default function EditNewsPage() {
                   label={titleValue || newsData?.title || "berita"}
                   disabled={!canEdit}
                 />
+                <span className="text-xs text-muted-foreground">Ukuran Gambar: 1280x720px (Rasio 16:9)</span>
               </CardContent>
             </Card>
 

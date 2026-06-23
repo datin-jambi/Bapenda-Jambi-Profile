@@ -484,7 +484,7 @@ function CmsUptdPage() {
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Identitas</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Kode UPTD *</Label>
+                    <Label>Kode UPTD <span className="text-red-500">*</span></Label>
                     <Input placeholder="UPTD-001" {...register("code")} />
                     {errors.code && <p className="text-xs text-destructive">{errors.code.message}</p>}
                   </div>
@@ -504,7 +504,7 @@ function CmsUptdPage() {
                   </div>
                 </div>
                 <div className="space-y-2 pt-2">
-                  <Label>Nama UPTD *</Label>
+                  <Label>Nama UPTD <span className="text-red-500">*</span></Label>
                   <Input placeholder="UPTD Samsat Kota Jambi" {...register("name")} />
                   {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
                 </div>

@@ -65,7 +65,7 @@ export default function CreateNewsCategoryPage() {
           <CardHeader><CardTitle className="text-base">Informasi Kategori</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nama Kategori *</Label>
+              <Label htmlFor="name">Nama Kategori <span className="text-red-500">*</span></Label>
               <Input id="name" placeholder="Contoh: Pajak Daerah" {...register("name")} />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>

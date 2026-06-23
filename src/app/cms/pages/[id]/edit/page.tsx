@@ -117,7 +117,7 @@ export default function EditPagePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Judul *</Label>
+                  <Label>Judul <span className="text-red-500">*</span></Label>
                   <Input placeholder="Judul halaman" {...register("title")} />
                   {errors.title && (
                     <p className="text-xs text-destructive">{errors.title.message}</p>
@@ -130,7 +130,7 @@ export default function EditPagePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Konten *</Label>
+                  <Label>Konten <span className="text-red-500">*</span></Label>
                   <Controller
                     name="content"
                     control={control}

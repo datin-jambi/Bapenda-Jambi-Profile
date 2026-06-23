@@ -72,7 +72,7 @@ export default function CreateFaqPage() {
           <CardHeader><CardTitle className="text-base">Informasi FAQ</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="categoryId">Kategori *</Label>
+              <Label htmlFor="categoryId">Kategori <span className="text-red-500">*</span></Label>
               <Select onValueChange={(v) => setValue("categoryId", parseInt(v, 10), { shouldValidate: true })}>
                 <SelectTrigger><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
                 <SelectContent>
@@ -86,7 +86,7 @@ export default function CreateFaqPage() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="question">Pertanyaan *</Label>
+                <Label htmlFor="question">Pertanyaan <span className="text-red-500">*</span></Label>
                 <span className="text-xs text-muted-foreground">{questionValue.length}/500</span>
               </div>
               <Textarea
@@ -100,7 +100,7 @@ export default function CreateFaqPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="answer">Jawaban *</Label>
+              <Label htmlFor="answer">Jawaban <span className="text-red-500">*</span></Label>
               <Textarea
                 id="answer"
                 placeholder="Tulis jawaban yang jelas dan lengkap..."

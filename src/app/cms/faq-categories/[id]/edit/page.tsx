@@ -93,7 +93,7 @@ export default function EditFaqCategoryPage() {
           <CardHeader><CardTitle className="text-base">Informasi Kategori</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Nama Kategori *</Label>
+              <Label>Nama Kategori <span className="text-red-500">*</span></Label>
               <Input placeholder="Contoh: Pajak Kendaraan Bermotor" {...register("name")} />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>

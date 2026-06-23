@@ -141,7 +141,7 @@ export default function EditGalleryPage() {
           <CardHeader><CardTitle className="text-base">Informasi Galeri</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Judul *</Label>
+              <Label>Judul <span className="text-red-500">*</span></Label>
               <Input {...register("title")} />
             </div>
             <div className="space-y-2">
@@ -164,6 +164,7 @@ export default function EditGalleryPage() {
                 }}
                 folder="/gallery"
               />
+              <span className="text-xs text-muted-foreground">Ukuran Gambar: 800x600px (Rasio 4:3)</span>
             </div>
           </CardContent>
         </Card>
@@ -176,7 +177,10 @@ export default function EditGalleryPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Foto ({gallery?.items?.length || 0} item)</CardTitle>
+            <div className="flex flex-col gap-1">
+              <CardTitle className="text-base">Foto ({gallery?.items?.length || 0} item)</CardTitle>
+              <span className="text-xs text-muted-foreground">Ukuran Gambar: 1080x1080px (Rasio 1:1)</span>
+            </div>
             <Button size="sm" variant="outline" onClick={() => setAddingItem(!addingItem)}>
               <Plus className="mr-1 h-3 w-3" />Tambah Foto
             </Button>

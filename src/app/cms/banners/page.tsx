@@ -307,7 +307,7 @@ function CmsBannersPage() {
           <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="flex flex-col flex-1 min-h-0">
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
               <div className="space-y-2">
-                <Label>Judul *</Label>
+                <Label>Judul <span className="text-red-500">*</span></Label>
                 <Input placeholder="Judul banner" {...register("title")} />
                 {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
               </div>
@@ -316,8 +316,9 @@ function CmsBannersPage() {
                 <Textarea placeholder="Deskripsi banner" rows={2} {...register("description")} />
               </div>
               <div className="space-y-2">
-                <Label>Gambar *</Label>
+                <Label>Gambar <span className="text-red-500">*</span></Label>
                 <ImageUpload value={imageUrl || ""} onChange={(url) => setValue("imageUrl", url)} folder="/banner" module="banner" label={watch("title") || "banner"} />
+                <span className="text-xs text-muted-foreground">Ukuran Gambar: 1920x1080px (Rasio 16:9)</span>
                 {errors.imageUrl && <p className="text-xs text-destructive">{errors.imageUrl.message}</p>}
               </div>
               <div className="grid grid-cols-2 gap-4">

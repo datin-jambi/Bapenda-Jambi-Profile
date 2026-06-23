@@ -73,13 +73,13 @@ export default function CreateNewsPage() {
               <CardHeader><CardTitle className="text-base">Informasi Utama</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Judul Berita *</Label>
+                  <Label htmlFor="title">Judul Berita <span className="text-red-500">*</span></Label>
                   <Input id="title" placeholder="Masukkan judul berita" {...register("title")} />
                   {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="categoryId">Kategori *</Label>
+                  <Label htmlFor="categoryId">Kategori <span className="text-red-500">*</span></Label>
                   <Controller
                     name="categoryId"
                     control={control}
@@ -103,7 +103,7 @@ export default function CreateNewsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Konten *</Label>
+                  <Label>Konten <span className="text-red-500">*</span></Label>
                   <Controller
                     name="content"
                     control={control}
@@ -131,6 +131,7 @@ export default function CreateNewsPage() {
                   module="news"
                   label={titleValue || "berita"}
                 />
+                <span className="text-xs text-muted-foreground">Ukuran Gambar: 1280x720px (Rasio 16:9)</span>
               </CardContent>
             </Card>
 
