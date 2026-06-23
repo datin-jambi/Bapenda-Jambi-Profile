@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2, MapPin, MapPinOff } from "lucide-react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +21,8 @@ import { DataTableFilter } from "@/components/cms/data-table-filter";
 import { DataTablePagination } from "@/components/cms/data-table-pagination";
 import { ConfirmDialog } from "@/components/cms/confirm-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
+
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -467,12 +469,15 @@ function CmsUptdPage() {
 
       {/* Create / Edit Dialog */}
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="max-w-2xl p-0 gap-0 max-h-[90vh] flex flex-col">
+          <VisuallyHidden.Root>
             <DialogTitle>{editId ? "Edit UPTD" : "Tambah UPTD Baru"}</DialogTitle>
-          </DialogHeader>
+          </VisuallyHidden.Root>
+          <div className="flex items-center justify-between px-6 py-4 border-b">
+            <h2 className="text-lg font-semibold">{editId ? "Edit UPTD" : "Tambah UPTD Baru"}</h2>
+          </div>
 
-          <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="space-y-5">
+          <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="flex flex-col flex-1 min-h-0">
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
               {/* Identitas */}
               <div className="space-y-1">
@@ -639,10 +644,14 @@ function CmsUptdPage() {
               </div>
             </div>
 
-            <DialogFooter>
+            {/* <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setFormOpen(false)}>Batal</Button>
               <Button type="submit" loading={isSubmitting || saveMutation.isPending}>Simpan</Button>
-            </DialogFooter>
+            </DialogFooter> */}
+            <div className="flex items-center justify-end gap-2 px-6 py-4 border-t">
+              <Button type="button" variant="outline" onClick={() => setFormOpen(false)}>Batal</Button>
+              <Button type="submit" loading={isSubmitting || saveMutation.isPending}>Simpan</Button>
+            </div>
           </form>
         </DialogContent>
       </Dialog>
