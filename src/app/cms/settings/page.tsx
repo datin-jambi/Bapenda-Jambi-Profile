@@ -9,8 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
-import { Save, Globe, Phone, Share2, Settings2, LucideIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Save, Globe, Phone, Share2, Settings2, MapPin, CheckCircle2, AlertCircle, LucideIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
 type SettingsForm = {
@@ -24,6 +24,9 @@ type SettingsForm = {
   contact_email: string;
   contact_fax: string;
   office_hours: string;
+  location_latitude: string;
+  location_longitude: string;
+  location_maps_embed_url: string;
   social_facebook: string;
   social_twitter: string;
   social_instagram: string;
@@ -70,6 +73,15 @@ const SECTIONS: Section[] = [
     ],
   },
   {
+    title: "Lokasi Kantor",
+    icon: MapPin,
+    fields: [
+      { key: "location_latitude", label: "Latitude", placeholder: "-1.6101" },
+      { key: "location_longitude", label: "Longitude", placeholder: "103.6131" },
+      { key: "location_maps_embed_url", label: "URL Embed Peta", placeholder: "https://maps.google.com/maps?q=...&output=embed", type: "textarea" },
+    ],
+  },
+  {
     title: "Media Sosial",
     icon: Share2,
     fields: [
@@ -90,19 +102,73 @@ const SECTIONS: Section[] = [
   },
 ];
 
+function parseMapsUrl(url: string): { lat: string; lng: string; embedUrl: string } | null {
+  // Sudah berbentuk embed URL — gunakan langsung
+  if (url.includes("/maps/embed") || url.includes("output=embed")) {
+    return { lat: "", lng: "", embedUrl: url };
+  }
+
+  let lat = "", lng = "", zoom = "17";
+
+  // Format: @lat,lng,zoomz  (link share Google Maps)
+  const atMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+),(\d+)z/);
+  if (atMatch) {
+    lat = atMatch[1];
+    lng = atMatch[2];
+    zoom = atMatch[3];
+  } else {
+    // Format: @lat,lng (tanpa zoom)
+    const atBasic = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (atBasic) { lat = atBasic[1]; lng = atBasic[2]; }
+  }
+
+  // Fallback: q=lat,lng
+  if (!lat) {
+    const qMatch = url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (qMatch) { lat = qMatch[1]; lng = qMatch[2]; }
+  }
+
+  // Fallback: ll=lat,lng
+  if (!lat) {
+    const llMatch = url.match(/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (llMatch) { lat = llMatch[1]; lng = llMatch[2]; }
+  }
+
+  if (!lat || !lng) return null;
+
+  const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
+  return { lat, lng, embedUrl };
+}
+
 export default function CmsSettingsPage() {
   const queryClient = useQueryClient();
+  const [mapsUrl, setMapsUrl] = useState("");
+  const [mapsStatus, setMapsStatus] = useState<"idle" | "ok" | "error">("idle");
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ["cms-settings"],
     queryFn: () => api.get("/cms/settings").then((r) => r.data.data),
   });
 
-  const { register, handleSubmit, reset, formState: { isDirty, isSubmitting } } = useForm<SettingsForm>();
+  const { register, handleSubmit, reset, setValue, formState: { isDirty, isSubmitting } } = useForm<SettingsForm>();
 
   useEffect(() => {
     if (settings) reset(settings);
   }, [settings, reset]);
+
+  const handleMapsUrl = (url: string) => {
+    setMapsUrl(url);
+    if (!url) { setMapsStatus("idle"); return; }
+    const result = parseMapsUrl(url);
+    if (result) {
+      if (result.lat) setValue("location_latitude", result.lat, { shouldDirty: true });
+      if (result.lng) setValue("location_longitude", result.lng, { shouldDirty: true });
+      setValue("location_maps_embed_url", result.embedUrl, { shouldDirty: true });
+      setMapsStatus("ok");
+    } else {
+      setMapsStatus("error");
+    }
+  };
 
   const mutation = useMutation({
     mutationFn: (data: SettingsForm) => api.put("/cms/settings", data),
@@ -155,6 +221,34 @@ export default function CmsSettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {title === "Lokasi Kantor" && (
+                <div className="space-y-2">
+                  <Label>Paste Link Google Maps</Label>
+                  <div className="relative">
+                    <Input
+                      value={mapsUrl}
+                      onChange={(e) => handleMapsUrl(e.target.value)}
+                      placeholder="https://www.google.com/maps/place/.../@-1.6101,103.6131,17z"
+                      className="pr-9"
+                    />
+                    {mapsStatus === "ok" && (
+                      <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
+                    )}
+                    {mapsStatus === "error" && (
+                      <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-destructive" />
+                    )}
+                  </div>
+                  {mapsStatus === "ok" && (
+                    <p className="text-xs text-green-600">Koordinat & URL embed berhasil diekstrak, klik Simpan untuk menyimpan</p>
+                  )}
+                  {mapsStatus === "error" && (
+                    <p className="text-xs text-destructive">Format tidak dikenali, isi koordinat dan URL embed secara manual</p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Salin link dari Google Maps → klik kanan lokasi → &quot;Bagikan&quot; → salin link, atau paste URL embed dari menu Bagikan → Sematkan peta.
+                  </p>
+                </div>
+              )}
               {fields.map(({ key, label, placeholder, type = "input" }) => (
                 <div key={key} className="space-y-2">
                   <Label htmlFor={key}>{label}</Label>

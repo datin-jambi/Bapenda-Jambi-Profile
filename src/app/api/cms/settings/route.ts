@@ -28,6 +28,7 @@ export const PUT = withErrorHandler(async (request: NextRequest) => {
     "site_name", "site_description", "site_keywords", "meta_author",
     "logo_url", "favicon_url",
     "contact_address", "contact_phone", "contact_email", "contact_fax", "office_hours",
+    "location_latitude", "location_longitude", "location_maps_embed_url",
     "social_facebook", "social_twitter", "social_instagram", "social_youtube", "social_tiktok",
     "google_analytics_id", "footer_text",
   ]);

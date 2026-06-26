@@ -1,8 +1,18 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Twitter, Instagram, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
+import { settingRepository } from "@/repositories/content.repository";
 
-export function PublicFooter() {
+export async function PublicFooter() {
+  const settings = await settingRepository.findAll().catch(() => ({} as Record<string, string>));
+
+  const socials = [
+    { Icon: Facebook, href: settings.social_facebook, label: "Facebook" },
+    { Icon: Twitter, href: settings.social_twitter, label: "Twitter" },
+    { Icon: Instagram, href: settings.social_instagram, label: "Instagram" },
+    { Icon: Youtube, href: settings.social_youtube, label: "YouTube" },
+  ].filter((s) => s.href);
+
   return (
     <footer className="bg-primary text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -21,32 +31,29 @@ export function PublicFooter() {
                 />
               </div>
               <div>
-                <p className="font-bold text-white">BAPENDA</p>
+                <p className="font-bold text-white">{settings.site_name || "BAPENDA"}</p>
                 <p className="text-white/70 text-xs">Provinsi Jambi</p>
               </div>
             </div>
             <p className="text-white/70 text-sm leading-relaxed">
               Badan Pendapatan Daerah Provinsi Jambi berkomitmen memberikan pelayanan terbaik dalam pengelolaan pendapatan daerah.
             </p>
-            <div className="flex items-center gap-3">
-              {[
-                { Icon: Facebook, href: "#", label: "Facebook" },
-                { Icon: Twitter, href: "#", label: "Twitter" },
-                { Icon: Instagram, href: "#", label: "Instagram" },
-                { Icon: Youtube, href: "#", label: "YouTube" },
-              ].map(({ Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-secondary transition-colors"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Icon className="h-4 w-4" />
-                </a>
-              ))}
-            </div>
+            {socials.length > 0 && (
+              <div className="flex items-center gap-3">
+                {socials.map(({ Icon, href, label }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    aria-label={label}
+                    className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-secondary transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Links */}
@@ -95,25 +102,25 @@ export function PublicFooter() {
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* Kontak */}
           <div>
             <h3 className="font-semibold text-white mb-4">Kontak</h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm text-white/70">
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0 text-secondary" />
-                Jl. Ahmad Yani No. 1, Kota Jambi 36122
+                {settings.contact_address || "Jl. Ahmad Yani No. 1, Kota Jambi 36122"}
               </li>
               <li className="flex items-center gap-2 text-sm text-white/70">
                 <Phone className="h-4 w-4 flex-shrink-0 text-secondary" />
-                (0741) 60436
+                {settings.contact_phone || "(0741) 60436"}
               </li>
               <li className="flex items-center gap-2 text-sm text-white/70">
                 <Mail className="h-4 w-4 flex-shrink-0 text-secondary" />
-                info@bapenda.jambiprov.go.id
+                {settings.contact_email || "info@bapenda.jambiprov.go.id"}
               </li>
               <li className="flex items-start gap-2 text-sm text-white/70">
                 <Clock className="h-4 w-4 mt-0.5 flex-shrink-0 text-secondary" />
-                Senin – Jumat: 08.00 – 16.00 WIB
+                {settings.office_hours || "Senin – Jumat: 08.00 – 16.00 WIB"}
               </li>
             </ul>
           </div>
@@ -123,7 +130,7 @@ export function PublicFooter() {
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-white/60 text-xs">
-            © {new Date().getFullYear()} BAPENDA Provinsi Jambi. Hak Cipta Dilindungi.
+            {settings.footer_text || `© ${new Date().getFullYear()} BAPENDA Provinsi Jambi. Hak Cipta Dilindungi.`}
           </p>
           <div className="flex items-center gap-4">
             <a href="https://jambiprov.go.id" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-secondary text-xs transition-colors">

@@ -10,6 +10,11 @@ export const metadata: Metadata = {
 export default async function KontakPage() {
   const settings = await settingRepository.findAll().catch(() => ({} as Record<string, string>));
 
+  const lat = settings.location_latitude || "-1.6101";
+  const lng = settings.location_longitude || "103.6131";
+  const mapSrc = settings.location_maps_embed_url ||
+    `https://maps.google.com/maps?q=${lat},${lng}&z=17&output=embed`;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-10">
@@ -47,7 +52,7 @@ export default async function KontakPage() {
           <h2 className="text-xl font-semibold text-primary mb-6">Lokasi</h2>
           <div className="w-full rounded-xl overflow-hidden bg-gray-100 border aspect-[4/3] lg:aspect-auto lg:h-[420px]">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.3693882843843!2d103.60954!3d-1.61089!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMcKwMzYnMzkuMiJTIDEwM8KwMzYnMzQuMyJF!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid"
+              src={mapSrc}
               width="100%"
               height="100%"
               style={{ border: 0 }}
