@@ -48,7 +48,9 @@
       "Bash(curl -s http://localhost:3000/api/public/faqs)",
       "Bash(taskkill /F /IM node.exe)",
       "Bash(cmd //c \"taskkill /F /IM node.exe\")",
-      "Bash(kill -9 787 812 834 823)"
+      "Bash(kill -9 787 812 834 823)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapenda-Jambi-Profile\\src\\app\\cms\\uptd",
