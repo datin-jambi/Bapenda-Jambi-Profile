@@ -13,3 +13,4 @@ Thumbs.db
 prisma/migrations/
 .vercel
 *.tsbuildinfo
+docs

@@ -50,12 +50,18 @@
       "Bash(cmd //c \"taskkill /F /IM node.exe\")",
       "Bash(kill -9 787 812 834 823)",
       "Bash(npm install *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(xargs grep -l \"hasPermission\")",
+      "Bash(mkdir -p \"c:/Users/ASUS/Documents/BPKPD/Code/Bapeda-Jambi-Profile/docs\")",
+      "Bash(npm --version)",
+      "Bash(node docs/generate-diagrams.js)",
+      "Bash(node docs/update-docs.js)"
     ],
     "additionalDirectories": [
       "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapenda-Jambi-Profile\\src\\app\\cms\\uptd",
       "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapenda-Jambi-Profile\\src\\app\\cms\\pages\\[id]",
-      "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapenda-Jambi-Profile\\src\\app\\api\\cms"
+      "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapenda-Jambi-Profile\\src\\app\\api\\cms",
+      "c:\\Users\\ASUS\\Documents\\BPKPD\\Code\\Bapeda-Jambi-Profile"
     ]
   }
 }
