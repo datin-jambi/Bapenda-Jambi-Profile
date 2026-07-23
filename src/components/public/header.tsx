@@ -22,12 +22,12 @@ export function PublicHeader({ pages = [] }: PublicHeaderProps) {
   const profilChildren = pages.length > 0
     ? pages.map((p) => ({ href: `/profil/${p.slug}`, label: p.title }))
     : [
-        { href: "/profil/sejarah", label: "Sejarah" },
-        { href: "/profil/visi-misi", label: "Visi & Misi" },
-        { href: "/profil/tupoksi", label: "Tupoksi" },
-        { href: "/profil/struktur-organisasi", label: "Struktur Organisasi" },
-        { href: "/profil/pejabat", label: "Pejabat" },
-      ];
+      { href: "/profil/sejarah", label: "Sejarah" },
+      { href: "/profil/visi-misi", label: "Visi & Misi" },
+      { href: "/profil/tupoksi", label: "Tupoksi" },
+      { href: "/profil/struktur-organisasi", label: "Struktur Organisasi" },
+      { href: "/profil/pejabat", label: "Pejabat" },
+    ];
 
   const NAV_LINKS = [
     { href: "/", label: "Beranda" },
@@ -46,6 +46,40 @@ export function PublicHeader({ pages = [] }: PublicHeaderProps) {
       children: [
         { href: "/berita", label: "Berita" },
         { href: "/galeri", label: "Galeri" },
+      ],
+    },
+    {
+      label: "PPID",
+      children: [
+        {
+          href: "/ppid/tentang",
+          label: "Tentang PPID",
+        },
+        {
+          href: "https://ppid.jambiprov.go.id/register",
+          label: "Permohonan Informasi Publik",
+          external: true,
+        },
+        {
+          href: "https://ppid.jambiprov.go.id/",
+          label: "Ringkasan Laporan Akses Informasi Publik",
+          external: true,
+        },
+        {
+          href: "https://ppid.jambiprov.go.id/front/dokumen?category=1&area=pemda",
+          label: "Informasi Berkala",
+          external: true,
+        },
+        {
+          href: "https://ppid.jambiprov.go.id/front/dokumen?category=2&area=pemda",
+          label: "Informasi Serta Merta",
+          external: true,
+        },
+        {
+          href: "https://ppid.jambiprov.go.id/front/dokumen?category=3&area=pemda",
+          label: "Informasi Setiap Saat",
+          external: true,
+        },
       ],
     },
     { href: "/faq", label: "FAQ" },
