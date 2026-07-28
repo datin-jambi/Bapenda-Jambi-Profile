@@ -119,18 +119,33 @@ export function PublicHeader({ pages = [] }: PublicHeaderProps) {
                     <ChevronDown className="h-3 w-3 transition-transform group-hover:rotate-180" />
                   </button>
                   <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                    {item.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        className={cn(
-                          "block px-4 py-2.5 text-sm hover:bg-primary/5 hover:text-primary transition-colors first:rounded-t-lg last:rounded-b-lg",
-                          pathname === child.href ? "text-primary font-medium bg-primary/5" : "text-gray-700"
-                        )}
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
+                    {item.children.map((child) =>
+                      "external" in child && child.external ? (
+                        <a
+                          key={child.href}
+                          href={child.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={cn(
+                            "block px-4 py-2.5 text-sm hover:bg-primary/5 hover:text-primary transition-colors first:rounded-t-lg last:rounded-b-lg",
+                            "text-gray-700"
+                          )}
+                        >
+                          {child.label}
+                        </a>
+                      ) : (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          className={cn(
+                            "block px-4 py-2.5 text-sm hover:bg-primary/5 hover:text-primary transition-colors first:rounded-t-lg last:rounded-b-lg",
+                            pathname === child.href ? "text-primary font-medium bg-primary/5" : "text-gray-700"
+                          )}
+                        >
+                          {child.label}
+                        </Link>
+                      )
+                    )}
                   </div>
                 </div>
               ) : (
@@ -183,16 +198,28 @@ export function PublicHeader({ pages = [] }: PublicHeaderProps) {
                 </button>
                 {openDropdown === item.label && (
                   <div className="pl-4 space-y-1">
-                    {item.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        className="block px-3 py-2 text-sm text-gray-600 hover:text-primary"
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
+                    {item.children.map((child) =>
+                      "external" in child && child.external ? (
+                        <a
+                          key={child.href}
+                          href={child.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block px-3 py-2 text-sm text-gray-600 hover:text-primary"
+                        >
+                          {child.label}
+                        </a>
+                      ) : (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          className="block px-3 py-2 text-sm text-gray-600 hover:text-primary"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          {child.label}
+                        </Link>
+                      )
+                    )}
                   </div>
                 )}
               </div>
