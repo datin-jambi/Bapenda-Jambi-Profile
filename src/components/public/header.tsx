@@ -36,7 +36,8 @@ export function PublicHeader({ pages = [] }: PublicHeaderProps) {
       label: "Layanan",
       children: [
         { href: "/layanan", label: "Informasi Layanan" },
-        { href: "/cek-pajak", label: "Cek Pajak Kendaraan" },
+        { href: "/layanan/cek-pajak", label: "Cek Pajak Kendaraan" },
+        { href: "/layanan/inpo-kendaraan", label: "Info Kendaraan" },
       ],
     },
     { href: "/lokasi-uptd", label: "Lokasi UPTD" },

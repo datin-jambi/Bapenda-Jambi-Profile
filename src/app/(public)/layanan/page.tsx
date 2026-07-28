@@ -22,24 +22,24 @@ export const metadata: Metadata = {
 
 const SERVICE_CARDS = [
   {
-    icon: Car,
-    title: "Informasi Pajak Kendaraan",
-    desc: "Pelajari ketentuan, tarif, dan tata cara pembayaran Pajak Kendaraan Bermotor (PKB) di Provinsi Jambi.",
-    cta: "Pelajari Selengkapnya",
-    href: "#pkb",
-    color: "bg-blue-50",
-    iconColor: "text-blue-600",
-    iconBg: "bg-blue-100",
-  },
-  {
     icon: Search,
     title: "Cek Pajak Kendaraan",
     desc: "Cek tagihan PKB, Opsen PKB, Jasa Raharja, dan PNBP kendaraan Anda secara online melalui integrasi API Samsat.",
     cta: "Cek Sekarang",
-    href: "/cek-pajak",
+    href: "/layanan/cek-pajak",
     color: "bg-green-50",
     iconColor: "text-green-600",
     iconBg: "bg-green-100",
+  },
+  {
+    icon: Car,
+    title: "Info Kendaraan",
+    desc: "Pelajari klasifikasi kendaraan, tarif PKB, Opsen, Jasa Raharja, dan ketentuan perpajakan kendaraan bermotor.",
+    cta: "Lihat Info",
+    href: "/layanan/inpo-kendaraan",
+    color: "bg-blue-50",
+    iconColor: "text-blue-600",
+    iconBg: "bg-blue-100",
   },
   {
     icon: Receipt,
@@ -151,7 +151,7 @@ export default function LayananPage() {
             Akses berbagai layanan perpajakan daerah dan informasi kendaraan secara mudah, cepat, dan transparan.
           </p>
           <Link
-            href="/cek-pajak"
+            href="/layanan/cek-pajak"
             className="inline-flex items-center gap-2 bg-secondary hover:bg-secondary/90 text-white px-8 py-3.5 rounded-xl font-semibold text-base transition-colors shadow-lg"
           >
             <Search className="h-5 w-5" />
@@ -280,7 +280,7 @@ export default function LayananPage() {
             Dapatkan informasi status pajak kendaraan secara cepat dan mudah melalui layanan online Bapenda Provinsi Jambi.
           </p>
           <Link
-            href="/cek-pajak"
+            href="/layanan/cek-pajak"
             className="inline-flex items-center gap-2 bg-secondary hover:bg-secondary/90 text-white px-8 py-3.5 rounded-xl font-semibold text-base transition-colors shadow-lg"
           >
             <Search className="h-5 w-5" />

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CekPkbClient } from "../cek-pkb/cek-pkb-client";
+import { CekPkbClient } from "./cek-pkb-client";
 
 export const metadata: Metadata = {
   title: "Cek Pajak Kendaraan | BAPENDA Provinsi Jambi",

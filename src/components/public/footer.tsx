@@ -82,7 +82,7 @@ export async function PublicFooter() {
             <h3 className="font-semibold text-white mb-4">Layanan</h3>
             <ul className="space-y-2">
               {[
-                { href: "/cek-pajak", label: "Cek Pajak" },
+                { href: "/layanan/cek-pajak", label: "Cek Pajak" },
                 { href: "/layanan#njkb", label: "Info NJKB" },
                 { href: "/layanan#pad", label: "Info PAD" },
                 { href: "https://esamsat.jambiprov.go.id", label: "E-Samsat", external: true },

@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Car, FileText, TrendingUp, CreditCard, BookOpen, HelpCircle } from "lucide-react";
+import { Search, Car, FileText, CreditCard, BookOpen, HelpCircle } from "lucide-react";
 
 const SERVICES = [
-  { icon: Car, label: "Info PKB", desc: "Pajak Kendaraan Bermotor", href: "/layanan#pkb", color: "bg-blue-50 text-blue-600" },
-  { icon: FileText, label: "Info NJKB", desc: "Nilai Jual Kendaraan", href: "/layanan#njkb", color: "bg-green-50 text-green-600" },
-  { icon: TrendingUp, label: "Info PAD", desc: "Pendapatan Asli Daerah", href: "/layanan#pad", color: "bg-purple-50 text-purple-600" },
+  { icon: Search, label: "Cek Pajak", desc: "Cek Tagihan PKB Online", href: "/layanan/cek-pajak", color: "bg-green-50 text-green-600" },
+  { icon: Car, label: "Info Kendaraan", desc: "Pajak & Klasifikasi", href: "/layanan/inpo-kendaraan", color: "bg-blue-50 text-blue-600" },
+  { icon: FileText, label: "Info NJKB", desc: "Nilai Jual Kendaraan", href: "/layanan#njkb", color: "bg-purple-50 text-purple-600" },
   { icon: CreditCard, label: "E-Samsat", desc: "Bayar Pajak Online", href: "https://esamsat.jambiprov.go.id", color: "bg-secondary/10 text-secondary", external: true },
   { icon: BookOpen, label: "Regulasi", desc: "Peraturan & Kebijakan", href: "/regulasi", color: "bg-primary/10 text-primary" },
   { icon: HelpCircle, label: "FAQ", desc: "Pertanyaan Umum", href: "/faq", color: "bg-orange-50 text-orange-600" },
