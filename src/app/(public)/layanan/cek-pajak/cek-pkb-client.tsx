@@ -131,6 +131,7 @@ function buildInvoiceHtml(data: AllData, grandTotal: number): string {
       <td style="padding:5px 8px;text-align:right">${item.pkb.pokok}</td>
       <td style="padding:5px 8px;text-align:right;color:#dc2626">${item.pkb.denda}</td>
       <td style="padding:5px 8px;text-align:right">${item.is_opsen ? item.opsen?.opsen ?? "-" : "-"}</td>
+      <td style="padding:5px 8px;text-align:right;color:#dc2626">${item.opsen?.denda_opsen ?? "-"}</td>
       <td style="padding:5px 8px;text-align:right;font-weight:600">${item.total}</td>
     </tr>`).join("") ?? "";
 
@@ -208,7 +209,7 @@ ${pajak ? `
   <div class="summary-row" style="margin-bottom:10px"><span class="lbl">Denda Opsen</span><span class="val" style="color:#dc2626">${pajak.tagihan.total.opsen.denda}</span></div>
   <table>
     <thead><tr>
-      <th>Periode</th><th>Telat</th><th class="right">PKB Pokok</th><th class="right">Denda</th><th class="right">Opsen</th><th class="right">Total</th>
+      <th>Periode</th><th>Telat</th><th class="right">PKB Pokok</th><th class="right">Denda PKB</th><th class="right">Opsen</th><th class="right">Denda Opsen</th><th class="right">Total</th>
     </tr></thead>
     <tbody>${rincianPKBRows}</tbody>
   </table>
@@ -583,13 +584,14 @@ export function CekPkbClient() {
                     </div>
                     <TableSection
                       title="Per Periode"
-                      headers={["Periode", "Telat", "PKB Pokok", "Denda", "Opsen", "Total"]}
+                      headers={["Periode", "Telat", "PKB Pokok", "Denda PKB", "Opsen", "Denda Opsen", "Total"]}
                       rows={data.pajak.tagihan.rincian.map((item) => [
                         item.periode.periode,
                         `${item.periode.total_bulan_telat} bln`,
                         item.pkb.pokok,
                         <span key="d" className="text-red-500">{item.pkb.denda}</span>,
                         item.is_opsen ? (item.opsen?.opsen ?? "-") : "-",
+                        <span key="do" className="text-red-500">{item.opsen?.denda_opsen}</span>,
                         item.total,
                       ])}
                     />
