@@ -20,6 +20,97 @@ Sistem manajemen konten (CMS) untuk website profil BAPENDA (Badan Pendapatan Dae
 
 ---
 
+## Struktur Aplikasi
+
+### Halaman Publik
+
+Website ini memiliki halaman publik yang dapat diakses oleh pengunjung:
+
+| Route | Halaman | Keterangan |
+|---|---|---|
+| `/` | Beranda | Halaman utama dengan hero, layanan cepat, berita, galeri |
+| `/profil/[slug]` | Profil BAPENDA | Halaman dinamis (sejarah, visi-misi, tupoksi, struktur organisasi, pejabat) |
+| `/layanan` | Informasi Layanan | Daftar layanan perpajakan daerah yang tersedia |
+| `/layanan/cek-pajak` | Cek Pajak Kendaraan | Cek tagihan PKB, Opsen, Jasa Raharja, dan PNBP via API Samsat |
+| `/layanan/inpo-kendaraan` | Info Kendaraan | Cari info detail kendaraan dan pelajari klasifikasi pajak |
+| `/lokasi-uptd` | Lokasi UPTD | Peta dan alamat kantor UPTD se-Provinsi Jambi |
+| `/berita` | Berita | Daftar berita dan informasi terkini |
+| `/berita/[slug]` | Detail Berita | Artikel berita lengkap |
+| `/galeri` | Galeri | Galeri foto kegiatan |
+| `/galeri/[id]` | Detail Galeri | Galeri foto per kategori |
+| `/regulasi` | Regulasi | Daftar peraturan dan kebijakan |
+| `/faq` | FAQ | Pertanyaan yang sering diajukan |
+| `/kontak` | Kontak | Informasi kontak BAPENDA |
+| `/ppid/tentang` | Tentang PPID | Informasi Pejabat Pengelola Informasi dan Dokumentasi |
+
+### Layanan Interaktif
+
+#### Cek Pajak Kendaraan (`/layanan/cek-pajak`)
+
+Layanan untuk mengecek tagihan pajak kendaraan secara *real-time* melalui integrasi API Samsat Provinsi Jambi.
+
+**Data yang ditampilkan:**
+- Informasi kendaraan (nomor polisi, merek, model, tahun, warna, NJKB)
+- Rincian tagihan PKB per periode (pokok + denda)
+- Rincian Opsen PKB (pokok + denda)
+- Rincian Jasa Raharja (SWDKLLJ) per tahun
+- Rincian PNBP (STNK & TNKB)
+- Total yang harus dibayar
+- Invoice preview + unduh PDF
+
+**Fitur:**
+- Auto-format nomor polisi (prefix `BH` untuk Jambi)
+- Deteksi status pembayaran (lunas / belum bayar / belum jatuh tempo)
+- Tampilan invoice siap cetak
+- Unduh invoice dalam format PDF
+
+#### Info Kendaraan (`/layanan/inpo-kendaraan`)
+
+Layanan untuk mencari informasi detail kendaraan berdasarkan nomor polisi, plus edukasi perpajakan kendaraan.
+
+**Data yang ditampilkan:**
+- Merek, model, jenis kendaraan
+- Tahun rakitan, warna, bahan bakar
+- CC mesin dan NJKB
+- Masa berlaku PKB & STNK
+- Lokasi transaksi terakhir
+
+**Fitur:**
+- Form pencarian nomor polisi dengan auto-format
+- Tautan langsung ke Cek Pajak untuk cek tagihan
+- Informasi edukatif: klasifikasi kendaraan, dasar pengenaan PKB, SWDKLLJ
+
+### API Publik (Endpoints)
+
+| Endpoint | Method | Keterangan |
+|---|---|---|
+| `/api/public/banners` | GET | Slider banner halaman utama |
+| `/api/public/news` | GET | Daftar berita publik |
+| `/api/public/galleries` | GET | Galeri foto publik |
+| `/api/public/faq-categories` | GET | Kategori FAQ |
+| `/api/public/faqs` | GET | Daftar FAQ |
+| `/api/public/regulations` | GET | Regulasi publik |
+| `/api/pages/[slug]` | GET | Halaman profil dinamis |
+
+### CMS (Halaman Admin)
+
+CMS dapat diakses setelah login di `/cms/login`. Menu yang tersedia:
+
+| Menu | Keterangan |
+|---|---|
+| Dashboard | Statistik ringkas |
+| Berita | CRUD berita + kategori |
+| Halaman | Kelola halaman profil (sejarah, visi-misi, dll) |
+| Galeri | Kelola galeri foto |
+| FAQ | Kelola pertanyaan umum |
+| Regulasi | Kelola peraturan |
+| UPTD | Kelola data lokasi UPTD |
+| Banner | Kelola slider banner |
+| Pengaturan | Konfigurasi umum aplikasi |
+| Pengguna | Manajemen admin CMS |
+
+---
+
 ## Prasyarat
 
 - Node.js 20+
@@ -66,6 +157,9 @@ IMAGEKIT_PRIVATE_KEY="your_imagekit_private_key"
 IMAGEKIT_URL_ENDPOINT="https://ik.imagekit.io/your_id"
 NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY="your_imagekit_public_key"
 NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT="https://ik.imagekit.io/your_id"
+
+NEXT_PUBLIC_PKB_API_HOST="https://api-samsat.example.com"
+NEXT_PUBLIC_PKB_API_TOKEN="your-api-token"
 
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 NEXT_PUBLIC_APP_NAME="BAPENDA Provinsi Jambi"
@@ -251,6 +345,8 @@ main branch
 | `IMAGEKIT_URL_ENDPOINT` | URL endpoint ImageKit |
 | `NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY` | Public key ImageKit (client-side) |
 | `NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT` | URL endpoint ImageKit (client-side) |
+| `NEXT_PUBLIC_PKB_API_HOST` | Base URL API Samsat (contoh: `https://api-samsat.example.com`) |
+| `NEXT_PUBLIC_PKB_API_TOKEN` | Bearer token untuk autentikasi API Samsat |
 | `NEXT_PUBLIC_APP_URL` | URL aplikasi, contoh: `http://localhost:3000` |
 | `NEXT_PUBLIC_APP_NAME` | Nama aplikasi |
 
