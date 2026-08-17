@@ -12,7 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (process.env.DATABASE_URL) {
     [news, galleries] = await Promise.all([
       prisma.news.findMany({
-        where: { status: "PUBLISHED" },
+        where: { status: "PUBLISHED", deletedAt: null },
         select: { slug: true, updatedAt: true },
         orderBy: { publishedAt: "desc" },
       }),

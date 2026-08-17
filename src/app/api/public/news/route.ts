@@ -8,7 +8,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const limit = Math.min(parseInt(searchParams.get("limit") ?? "6", 10), 20);
 
   const news = await prisma.news.findMany({
-    where: { status: "PUBLISHED" },
+    where: { status: "PUBLISHED", deletedAt: null },
     take: limit,
     orderBy: { publishedAt: "desc" },
     select: {

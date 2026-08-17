@@ -19,6 +19,7 @@ export default async function BeritaPage({ searchParams }: { searchParams: Promi
 
   const where = {
     status: "PUBLISHED" as const,
+    deletedAt: null,
     ...(resolvedParams.category && { category: { slug: resolvedParams.category } }),
   };
 

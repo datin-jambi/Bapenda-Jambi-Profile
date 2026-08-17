@@ -11,7 +11,7 @@ interface Props { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const news = await prisma.news.findUnique({ where: { slug } });
+  const news = await prisma.news.findUnique({ where: { slug, status: "PUBLISHED", deletedAt: null } });
   if (!news) return { title: "Tidak Ditemukan" };
   return {
     title: news.seoTitle || news.title,
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function NewsDetailPage({ params }: Props) {
   const { slug } = await params;
   const news = await prisma.news.findUnique({
-    where: { slug, status: "PUBLISHED" },
+    where: { slug, status: "PUBLISHED", deletedAt: null },
     include: {
       category: true,
       author: { select: { name: true, avatarUrl: true } },
@@ -33,7 +33,7 @@ export default async function NewsDetailPage({ params }: Props) {
   if (!news) notFound();
 
   const related = await prisma.news.findMany({
-    where: { status: "PUBLISHED", categoryId: news.categoryId, NOT: { id: news.id } },
+    where: { status: "PUBLISHED", deletedAt: null, categoryId: news.categoryId, NOT: { id: news.id } },
     take: 3,
     orderBy: { publishedAt: "desc" },
     select: { id: true, title: true, slug: true, thumbnailUrl: true, publishedAt: true, createdAt: true },
