@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Search, ArrowLeft, Phone, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Cek Pajak Kendaraan | BAPENDA Provinsi Jambi",
@@ -51,20 +52,23 @@ export default function CekPajakUnavailablePage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/layanan"
-              className="inline-flex items-center justify-center gap-2 bg-secondary hover:bg-secondary/90 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-colors shadow-sm"
+            <Button variant="warning" size="lg" asChild>
+              <Link href="/layanan">
+                <ArrowLeft className="h-4 w-4" />
+                Kembali ke Layanan
+              </Link>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              asChild
+              className="hover:border-primary hover:text-primary"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Kembali ke Layanan
-            </Link>
-            <Link
-              href="/kontak"
-              className="inline-flex items-center justify-center gap-2 border border-gray-200 hover:border-primary hover:text-primary text-gray-700 px-6 py-3 rounded-xl font-semibold text-sm transition-colors"
-            >
-              <Phone className="h-4 w-4" />
-              Hubungi Kami
-            </Link>
+              <Link href="/kontak">
+                <Phone className="h-4 w-4" />
+                Hubungi Kami
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
