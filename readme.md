@@ -31,7 +31,8 @@ Website ini memiliki halaman publik yang dapat diakses oleh pengunjung:
 | `/` | Beranda | Halaman utama dengan hero, layanan cepat, berita, galeri |
 | `/profil/[slug]` | Profil BAPENDA | Halaman dinamis (sejarah, visi-misi, tupoksi, struktur organisasi, pejabat) |
 | `/layanan` | Informasi Layanan | Daftar layanan perpajakan daerah yang tersedia |
-| `/layanan/cek-pajak` | Cek Pajak Kendaraan | Cek tagihan PKB, Opsen, Jasa Raharja, dan PNBP via API Samsat |
+| `/layanan/cek-pajak` | Cek Pajak Kendaraan | Halaman pemberitahuan (fitur sedang tidak tersedia) |
+| `/layanan/stage/cek-pkb` | Cek Pajak Kendaraan (stage) | Cek tagihan PKB, Opsen, Jasa Raharja, dan PNBP via API Samsat (internal, tidak terindeks) |
 | `/layanan/inpo-kendaraan` | Info Kendaraan | Cari info detail kendaraan dan pelajari klasifikasi pajak |
 | `/lokasi-uptd` | Lokasi UPTD | Peta dan alamat kantor UPTD se-Provinsi Jambi |
 | `/berita` | Berita | Daftar berita dan informasi terkini |
@@ -45,9 +46,11 @@ Website ini memiliki halaman publik yang dapat diakses oleh pengunjung:
 
 ### Layanan Interaktif
 
-#### Cek Pajak Kendaraan (`/layanan/cek-pajak`)
+#### Cek Pajak Kendaraan (`/layanan/stage/cek-pkb`)
 
 Layanan untuk mengecek tagihan pajak kendaraan secara *real-time* melalui integrasi API Samsat Provinsi Jambi.
+
+> **Catatan:** Saat ini fitur diakses melalui path internal `/layanan/stage/cek-pkb` (tidak terindeks). URL publik `/layanan/cek-pajak` menampilkan pemberitahuan bahwa fitur sedang tidak tersedia.
 
 **Data yang ditampilkan:**
 - Informasi kendaraan (nomor polisi, merek, model, tahun, warna, NJKB)
