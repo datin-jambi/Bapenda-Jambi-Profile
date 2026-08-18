@@ -26,10 +26,12 @@ const SERVICE_CARDS = [
     title: "Cek Pajak Kendaraan",
     desc: "Cek tagihan PKB, Opsen PKB, Jasa Raharja, dan PNBP kendaraan Anda secara online melalui integrasi API Samsat.",
     cta: "Cek Sekarang",
-    href: "/layanan/cek-pajak",
+    // href: "/layanan/cek-pajak",
+    href: "https://jambisamsat.net/infopkb.html",
     color: "bg-green-50",
     iconColor: "text-green-600",
     iconBg: "bg-green-100",
+    // external: true,
   },
   {
     icon: Car,
@@ -151,7 +153,8 @@ export default function LayananPage() {
             Akses berbagai layanan perpajakan daerah dan informasi kendaraan secara mudah, cepat, dan transparan.
           </p>
           <Link
-            href="/layanan/cek-pajak"
+            // href="/layanan/cek-pajak"
+            href="https://jambisamsat.net/infopkb.html"
             className="inline-flex items-center gap-2 bg-secondary hover:bg-secondary/90 text-white px-8 py-3.5 rounded-xl font-semibold text-base transition-colors shadow-lg"
           >
             <Search className="h-5 w-5" />
@@ -272,22 +275,6 @@ export default function LayananPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 px-4 bg-gradient-to-r from-primary to-primary/80">
-        <div className="max-w-3xl mx-auto text-center text-white">
-          <h2 className="text-3xl font-bold font-poppins mb-3">Cek Pajak Kendaraan Anda Sekarang</h2>
-          <p className="text-white/80 mb-8 text-base">
-            Dapatkan informasi status pajak kendaraan secara cepat dan mudah melalui layanan online Bapenda Provinsi Jambi.
-          </p>
-          <Link
-            href="/layanan/cek-pajak"
-            className="inline-flex items-center gap-2 bg-secondary hover:bg-secondary/90 text-white px-8 py-3.5 rounded-xl font-semibold text-base transition-colors shadow-lg"
-          >
-            <Search className="h-5 w-5" />
-            Mulai Cek Pajak
-          </Link>
-        </div>
-      </section>
     </main>
   );
 }

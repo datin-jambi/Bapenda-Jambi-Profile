@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Search, Car, FileText, CreditCard, BookOpen, HelpCircle } from "lucide-react";
 
 const SERVICES = [
-  { icon: Search, label: "Cek Pajak", desc: "Cek Tagihan PKB Online", href: "/layanan/cek-pajak", color: "bg-green-50 text-green-600" },
+  // { icon: Search, label: "Cek Pajak", desc: "Cek Tagihan PKB Online", href: "/layanan/cek-pajak", color: "bg-green-50 text-green-600" },
+  { icon: Search, label: "Cek Pajak", desc: "Cek Tagihan PKB Online", href: "https://jambisamsat.net/infopkb.html", color: "bg-green-50 text-green-600", external: true },
   { icon: Car, label: "Info Kendaraan", desc: "Pajak & Klasifikasi", href: "/layanan/inpo-kendaraan", color: "bg-blue-50 text-blue-600" },
   { icon: FileText, label: "Info NJKB", desc: "Nilai Jual Kendaraan", href: "/layanan#njkb", color: "bg-purple-50 text-purple-600" },
   { icon: CreditCard, label: "E-Samsat", desc: "Bayar Pajak Online", href: "https://esamsat.jambiprov.go.id", color: "bg-secondary/10 text-secondary", external: true },
