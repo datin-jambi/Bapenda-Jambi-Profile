@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { formatDate } from "@/lib/utils";
 import { FileText, Download, Eye, Search } from "lucide-react";
-import { PdfPreviewDialog } from "@/components/cms/pdf-preview-dialog";
+import { PdfPreviewDialog } from "@/components/seloko/pdf-preview-dialog";
 
 type Regulation = {
   id: number;

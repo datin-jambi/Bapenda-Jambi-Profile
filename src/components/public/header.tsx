@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Menu, X, ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 type PageLink = { slug: string; title: string };
@@ -167,13 +166,6 @@ export function PublicHeader({ pages = [] }: PublicHeaderProps) {
             )}
           </nav>
 
-          {/* CMS Link */}
-          <div className="hidden lg:flex items-center gap-2">
-            <Button size="sm" asChild>
-              <Link href="/cms/login">Login CMS</Link>
-            </Button>
-          </div>
-
           {/* Mobile toggle */}
           <button
             className="lg:hidden p-2 rounded-md text-gray-600 hover:text-primary"
@@ -239,11 +231,6 @@ export function PublicHeader({ pages = [] }: PublicHeaderProps) {
               </Link>
             )
           )}
-          <div className="pt-2 border-t">
-            <Button size="sm" className="w-full" asChild>
-              <Link href="/cms/login">Login CMS</Link>
-            </Button>
-          </div>
         </div>
       )}
     </header>

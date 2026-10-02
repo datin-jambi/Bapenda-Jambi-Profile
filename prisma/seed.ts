@@ -73,7 +73,8 @@ async function main() {
     }
 
     await tx.$executeRawUnsafe("SET session_replication_role = origin");
-  });
+    // Default interactive transaction Prisma cuma 5 detik — seed penuh lebih lama (P2028).
+  }, { maxWait: 30_000, timeout: 120_000 });
 
   for (const { file } of loaded) await resyncSequence(file);
 

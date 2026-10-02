@@ -76,21 +76,21 @@ export async function POST(request: NextRequest) {
 
 // GET tetap untuk redirect flow dari middleware
 export async function GET(request: NextRequest) {
-  const redirect = request.nextUrl.searchParams.get("redirect") ?? "/cms/dashboard";
+  const redirect = request.nextUrl.searchParams.get("redirect") ?? "/seloko/dashboard";
   const refreshToken = request.cookies.get("refresh_token")?.value;
 
   if (!refreshToken) {
-    return NextResponse.redirect(new URL("/cms/login", request.url));
+    return NextResponse.redirect(new URL("/seloko/login", request.url));
   }
 
   const refreshPayload = await verifyRefreshToken(refreshToken);
   if (!refreshPayload?.sub) {
-    return NextResponse.redirect(new URL("/cms/login", request.url));
+    return NextResponse.redirect(new URL("/seloko/login", request.url));
   }
 
   const userId = Number(refreshPayload.sub);
   if (isNaN(userId)) {
-    return NextResponse.redirect(new URL("/cms/login", request.url));
+    return NextResponse.redirect(new URL("/seloko/login", request.url));
   }
 
   const user = await prisma.user.findFirst({
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
 
   if (!user || !user.isActive) {
     console.warn(`[auth/refresh/GET] User invalid or inactive: id=${userId}`);
-    return NextResponse.redirect(new URL("/cms/login", request.url));
+    return NextResponse.redirect(new URL("/seloko/login", request.url));
   }
 
   const newAccessToken = await signAccessToken({
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
   });
   const newRefreshToken = await signRefreshToken(user.id);
 
-  const safeRedirect = redirect.startsWith("/") ? redirect : "/cms/dashboard";
+  const safeRedirect = redirect.startsWith("/") ? redirect : "/seloko/dashboard";
   const response = NextResponse.redirect(new URL(safeRedirect, request.url));
 
   response.cookies.set("access_token", newAccessToken, {

@@ -1,6 +1,6 @@
-# BAPENDA Provinsi Jambi — CMS Profile
+# BAPENDA Provinsi Jambi — Seloko
 
-Sistem manajemen konten (CMS) untuk website profil BAPENDA (Badan Pendapatan Daerah) Provinsi Jambi. Dibangun dengan Next.js 15, PostgreSQL, Prisma ORM, dan dideploy via Docker + GitHub Actions.
+**Seloko** adalah aplikasi internal BAPENDA Provinsi Jambi untuk mengelola konten website profil sekaligus melayani pengecekan pajak kendaraan di lapangan. Dibangun dengan Next.js 15, PostgreSQL, Prisma ORM, dan dideploy via Docker + GitHub Actions.
 
 ---
 
@@ -95,9 +95,9 @@ Layanan untuk mencari informasi detail kendaraan berdasarkan nomor polisi, plus 
 | `/api/public/regulations` | GET | Regulasi publik |
 | `/api/pages/[slug]` | GET | Halaman profil dinamis |
 
-### CMS (Halaman Admin)
+### Seloko (Halaman Admin)
 
-CMS dapat diakses setelah login di `/cms/login`. Menu yang tersedia:
+Seloko dapat diakses setelah login di `/seloko/login`. Menu yang tersedia:
 
 | Menu | Keterangan |
 |---|---|
@@ -110,7 +110,7 @@ CMS dapat diakses setelah login di `/cms/login`. Menu yang tersedia:
 | UPTD | Kelola data lokasi UPTD |
 | Banner | Kelola slider banner |
 | Pengaturan | Konfigurasi umum aplikasi |
-| Pengguna | Manajemen admin CMS |
+| Pengguna | Manajemen admin Seloko |
 
 ---
 

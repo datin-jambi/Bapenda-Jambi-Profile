@@ -39,7 +39,7 @@ api.interceptors.response.use(
       } catch {
         processQueue(false);
         if (typeof window !== "undefined") {
-          window.location.href = "/cms/login";
+          window.location.href = "/seloko/login";
         }
         return Promise.reject(error);
       } finally {

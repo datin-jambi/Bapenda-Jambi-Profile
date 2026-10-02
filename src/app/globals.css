@@ -213,4 +213,12 @@
   /* Table resize wrapper */
   .tableWrapper { overflow-x: auto; }
   .resize-cursor { cursor: col-resize; }
+
+  /* Seloko mobile shell: judul halaman sudah ada di top app bar, jadi heading
+     internal dikecilkan agar terasa seperti aplikasi mobile, bukan halaman web. */
+  @media (max-width: 767px) {
+    .seloko-main h1 { font-size: 1.125rem; line-height: 1.5rem; }
+    /* iOS auto-zoom saat fokus input bila font < 16px. */
+    .seloko-main :is(input, select, textarea) { font-size: 16px; }
+  }
 }

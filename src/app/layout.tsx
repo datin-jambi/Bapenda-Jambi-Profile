@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
@@ -22,6 +22,9 @@ export const metadata: Metadata = {
     template: "%s | BAPENDA Provinsi Jambi",
   },
   description: "Website Resmi Badan Pendapatan Daerah Provinsi Jambi",
+  // Wajib agar browser menemukan manifest — tanpa ini nama/ikon PWA tidak
+  // pernah ter-update di perangkat yang sudah memasang aplikasi.
+  manifest: "/manifest.webmanifest",
   keywords: ["bapenda", "jambi", "pajak", "samsat", "pkb"],
   authors: [{ name: "BAPENDA Provinsi Jambi" }],
   creator: "BAPENDA Provinsi Jambi",
@@ -37,6 +40,20 @@ export const metadata: Metadata = {
     url: process.env.NEXT_PUBLIC_APP_URL,
     siteName: "BAPENDA Provinsi Jambi",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "SELOKO",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // Standalone PWA: cegah zoom-bounce saat tap input di iOS.
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#1a3a6e",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

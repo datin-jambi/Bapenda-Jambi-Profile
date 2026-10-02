@@ -58,3 +58,23 @@ export const useAuthStore = create<AuthStore>()(
     { name: "auth-store" }
   )
 );
+
+/** Event `beforeinstallprompt` (Chromium) — hanya di-fire sekali per sesi. */
+export interface InstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
+interface InstallStore {
+  event: InstallPromptEvent | null;
+  setEvent: (event: InstallPromptEvent | null) => void;
+}
+
+/**
+ * Menyimpan install prompt supaya tetap bisa dipakai setelah banner ditutup —
+ * pengguna bisa memasang ulang lewat halaman Profil.
+ */
+export const useInstallStore = create<InstallStore>((set) => ({
+  event: null,
+  setEvent: (event) => set({ event }),
+}));

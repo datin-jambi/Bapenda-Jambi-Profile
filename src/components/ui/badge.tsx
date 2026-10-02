@@ -64,7 +64,7 @@ const badgeVariants = cva(
   }
 )
 
-// Status preset map — CMS convenience
+// Status preset map — Seloko convenience
 export type StatusBadgeStatus =
   | "active"
   | "inactive"

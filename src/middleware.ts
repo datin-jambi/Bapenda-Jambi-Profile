@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAccessToken, verifyRefreshToken } from "@/lib/auth";
 
-const CMS_PATH = "/cms";
-const AUTH_PATHS = ["/cms/login"];
+const SELOKO_PATH = "/seloko";
+const AUTH_PATHS = ["/seloko/login"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isCmsPath = pathname.startsWith(CMS_PATH);
+  const isSelokoPath = pathname.startsWith(SELOKO_PATH);
   const isAuthPath = AUTH_PATHS.includes(pathname);
   const isApiPath = pathname.startsWith("/api/");
 
-  if (!isCmsPath && !isApiPath) return NextResponse.next();
+  if (!isSelokoPath && !isApiPath) return NextResponse.next();
 
   // Allow public API routes
-  if (isApiPath && !pathname.startsWith("/api/cms")) {
+  if (isApiPath && !pathname.startsWith("/api/seloko")) {
     return NextResponse.next();
   }
 
@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
     const payload = await verifyAccessToken(accessToken);
     if (payload) {
       if (isAuthPath) {
-        return NextResponse.redirect(new URL("/cms/dashboard", request.url));
+        return NextResponse.redirect(new URL("/seloko/dashboard", request.url));
       }
       const response = NextResponse.next();
       response.headers.set("x-user-id", String(payload.sub));
@@ -50,8 +50,8 @@ export async function middleware(request: NextRequest) {
   // Not authenticated
   if (isAuthPath) return NextResponse.next();
 
-  if (isCmsPath) {
-    return NextResponse.redirect(new URL("/cms/login", request.url));
+  if (isSelokoPath) {
+    return NextResponse.redirect(new URL("/seloko/login", request.url));
   }
 
   if (isApiPath) {
@@ -62,5 +62,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/cms/:path*", "/api/cms/:path*"],
+  matcher: ["/seloko/:path*", "/api/seloko/:path*"],
 };

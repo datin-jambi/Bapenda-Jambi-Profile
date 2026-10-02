@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Camera, Loader2, RotateCcw, Check, X, AlertCircle } from "lucide-react";
+import { Camera, Loader2, RotateCcw, Check, X, AlertCircle, SwitchCamera } from "lucide-react";
 
 const PLATE_API =
   process.env.NEXT_PUBLIC_PLATE_API_URL ?? "http://localhost:5051/api/detect-plate";
@@ -57,6 +57,8 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
   const [snapshot, setSnapshot] = useState("");
   const [plate, setPlate] = useState("");
   const [confidence, setConfidence] = useState<number | null>(null);
+  const [facing, setFacing] = useState<"environment" | "user">("environment");
+  const [hasMultiCam, setHasMultiCam] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -122,12 +124,13 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
     }
   }, [goReview]);
 
-  const startCamera = useCallback(async () => {
+  const startCamera = useCallback(async (mode: "environment" | "user" = "environment") => {
     setError("");
     setStatus("Menyalakan kamera...");
+    stopStream();
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 } },
+        video: { facingMode: { ideal: mode }, width: { ideal: 1280 } },
         audio: false,
       });
       streamRef.current = stream;
@@ -139,13 +142,18 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
       video.srcObject = stream;
       await video.play();
       setStatus("Arahkan plat ke dalam kotak");
+      // Label device baru terisi setelah izin diberikan, jadi dicek di sini.
+      const cams = (await navigator.mediaDevices.enumerateDevices()).filter(
+        (d) => d.kind === "videoinput"
+      );
+      setHasMultiCam(cams.length > 1);
     } catch {
       setError(
         "Kamera tidak dapat diakses. Beri izin kamera; browser hanya mengizinkan di localhost atau HTTPS."
       );
       setStatus("");
     }
-  }, []);
+  }, [stopStream]);
 
   // Buka: nyalakan kamera. Deteksi hanya jalan saat tombol capture ditekan.
   useEffect(() => {
@@ -158,8 +166,9 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
     setPlate("");
     setConfidence(null);
     setError("");
+    setFacing("environment");
 
-    startCamera();
+    startCamera("environment");
 
     return () => {
       abortRef.current = true;
@@ -174,13 +183,19 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
     onClose();
   };
 
+  const handleSwitchCamera = async () => {
+    const next = facing === "environment" ? "user" : "environment";
+    setFacing(next);
+    await startCamera(next);
+  };
+
   const handleRetake = async () => {
     modeRef.current = "scanning";
     setMode("scanning");
     setSnapshot("");
     setPlate("");
     setConfidence(null);
-    await startCamera();
+    await startCamera(facing);
   };
 
   const handleConfirm = () => {
@@ -214,10 +229,24 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
             <img src={snapshot} alt="Hasil tangkapan plat" className="w-full h-full object-contain" />
           ) : (
             <>
-              <video ref={videoRef} playsInline muted className="w-full h-full object-cover" />
+              <video
+                ref={videoRef}
+                playsInline
+                muted
+                className={`w-full h-full object-cover ${facing === "user" ? "scale-x-[-1]" : ""}`}
+              />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="w-3/4 h-1/4 border-2 border-white/80 rounded-lg shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]" />
               </div>
+              {hasMultiCam && (
+                <button
+                  onClick={handleSwitchCamera}
+                  className="absolute top-2 right-2 p-2 rounded-full bg-black/50 text-white"
+                  aria-label={facing === "environment" ? "Pakai kamera depan" : "Pakai kamera belakang"}
+                >
+                  <SwitchCamera className="h-4 w-4" />
+                </button>
+              )}
               <div className="absolute bottom-2 left-0 right-0 px-3 text-center text-[11px] text-white/90">
                 {status}
               </div>
