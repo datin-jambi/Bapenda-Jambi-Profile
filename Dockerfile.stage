@@ -49,6 +49,9 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=deps /app/node_modules/prisma ./node_modules/prisma
 
+# Cek konfigurasi saat start
+COPY --from=builder /app/scripts/check-config.mjs ./scripts/check-config.mjs
+
 # Entrypoint
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
 RUN sed -i 's/\r$//' ./docker-entrypoint.sh && chmod +x ./docker-entrypoint.sh

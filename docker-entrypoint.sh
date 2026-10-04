@@ -1,18 +1,12 @@
 #!/bin/sh
 set -e
 
-# Run database migrations
-echo "Running database migrations..."
-npx prisma migrate deploy || {
-    echo "Migration failed, continuing anyway..."
-}
+# Laporan konfigurasi di awal log; tidak menghentikan start bila gagal.
+node ./scripts/check-config.mjs || echo "Cek konfigurasi error, lanjut..."
 
-# Run database seed (optional - only if needed)
-echo "Running database seed..."
-npm run db:seed || {
-    echo "Seed skipped or failed, continuing..."
-}
+# Migrasi & seed TIDAK dijalankan di container — jalankan dari luar:
+#   npx prisma migrate deploy
+#   npm run db:seed   (menghapus isi tabel dump lalu isi ulang)
 
-# Start Next.js server
 echo "Starting Next.js server on port $PORT..."
 exec "$@"

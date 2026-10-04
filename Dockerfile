@@ -37,12 +37,25 @@ ENV NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=$NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT
 ARG NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY
 ENV NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY=$NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY
 
+# NEXT_PUBLIC_* ditanam ke bundle browser saat build; .env tidak ikut ke context
+ARG NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_APP_NAME
+ENV NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME
+ARG NEXT_PUBLIC_PLATE_API_URL
+ENV NEXT_PUBLIC_PLATE_API_URL=$NEXT_PUBLIC_PLATE_API_URL
+ARG NEXT_PUBLIC_COMMIT_SHA
+ENV NEXT_PUBLIC_COMMIT_SHA=$NEXT_PUBLIC_COMMIT_SHA
+
 # Build-time envs needed for Next.js static analysis/page data collection
 # Override via: docker build --build-arg NEXTAUTH_SECRET=... 
 ARG NEXTAUTH_SECRET=build-time-placeholder-not-for-production
 ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
 
 RUN npm run build
+
+# Catat NEXT_PUBLIC_* yang tertanam, dibaca scripts/check-config.mjs saat start
+RUN env | grep '^NEXT_PUBLIC_' > build-public-env || true
 
 # Stage 3: Production runner
 FROM node:20-alpine AS runner
@@ -80,6 +93,10 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=deps /app/node_modules/prisma ./node_modules/prisma
+
+# Cek konfigurasi saat start
+COPY --from=builder /app/scripts/check-config.mjs ./scripts/check-config.mjs
+COPY --from=builder /app/build-public-env ./build-public-env
 
 # Entrypoint
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
