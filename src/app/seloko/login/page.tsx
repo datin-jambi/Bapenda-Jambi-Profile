@@ -112,7 +112,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@bapenda.jambiprov.go.id"
+                placeholder="admin@gmail.com"
                 autoComplete="email"
                 disabled={isLocked}
                 {...register("email")}
