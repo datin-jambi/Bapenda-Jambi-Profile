@@ -1,8 +1,23 @@
 // Tes koneksi DB dari file env. Tidak mencetak password — hanya host:port/db.
 // Pakai: npm run db:test:connection [-- .env.staging]   (default .env)
 import { readFileSync } from "node:fs";
-import { parseEnv } from "node:util";
 import { PrismaClient } from "@prisma/client";
+
+// ponytail: parser sendiri karena util.parseEnv baru ada di Node 20.12 (server
+// masih Node lama). Cukup KEY=VALUE, komentar #, kutip ' / ". Tanpa multiline.
+function parseEnv(text) {
+  const out = {};
+  for (const raw of text.split(/\r?\n/)) {
+    const m = raw.match(/^\s*(?:export\s+)?([\w.-]+)\s*=\s*(.*)$/);
+    if (!m) continue;
+    let v = m[2].trim();
+    const q = v[0];
+    if ((q === '"' || q === "'") && v.indexOf(q, 1) > 0) v = v.slice(1, v.indexOf(q, 1));
+    else v = v.replace(/\s+#.*$/, "");
+    out[m[1]] = v;
+  }
+  return out;
+}
 
 // Dibaca langsung dari file, bukan process.env: @prisma/client sudah memuat
 // .env saat di-import, jadi process.env bisa berisi nilai dari file lain.
