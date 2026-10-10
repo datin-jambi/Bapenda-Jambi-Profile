@@ -57,9 +57,14 @@ async function main() {
 
   await prisma.$transaction(async (tx) => {
     // vehicle_tax_check_logs berisi data operasional (bukan bagian dump) dan
-    // menunjuk users, sehingga menghalangi delete. FK dimatikan sementara agar
-    // baris itu tetap utuh; validitasnya dicek lagi setelah transaksi.
-    await tx.$executeRawUnsafe("SET session_replication_role = replica");
+    // menunjuk users (ON DELETE RESTRICT), sehingga menghalangi delete. Baris
+    // itu diparkir di temp table lalu dikembalikan apa adanya (id sama). Tidak
+    // pakai session_replication_role karena butuh superuser. Bila user-nya
+    // hilang dari dump, INSERT kembali gagal kena FK dan seluruh seed rollback.
+    await tx.$executeRawUnsafe(
+      "CREATE TEMP TABLE _vtcl ON COMMIT DROP AS SELECT * FROM vehicle_tax_check_logs"
+    );
+    await tx.$executeRawUnsafe("DELETE FROM vehicle_tax_check_logs");
 
     for (const { model } of [...loaded].reverse()) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,19 +77,12 @@ async function main() {
       console.log(`  ${file}: ${rows.length} baris`);
     }
 
-    await tx.$executeRawUnsafe("SET session_replication_role = origin");
+    const kept = await tx.$executeRawUnsafe("INSERT INTO vehicle_tax_check_logs SELECT * FROM _vtcl");
+    console.log(`  vehicle_tax_check_logs: ${kept} baris dipertahankan`);
     // Default interactive transaction Prisma cuma 5 detik — seed penuh lebih lama (P2028).
   }, { maxWait: 30_000, timeout: 120_000 });
 
   for (const { file } of loaded) await resyncSequence(file);
-
-  const orphan = await prisma.$queryRawUnsafe<{ n: bigint }[]>(
-    `SELECT COUNT(*) AS n FROM vehicle_tax_check_logs l
-     LEFT JOIN users u ON u.id = l."userId" WHERE u.id IS NULL`
-  );
-  if (Number(orphan[0].n) > 0) {
-    throw new Error(`${orphan[0].n} baris vehicle_tax_check_logs kehilangan user — seed dibatalkan`);
-  }
 }
 
 main()
