@@ -85,7 +85,7 @@ export async function PublicFooter() {
                 { href: "/layanan/cek-pajak", label: "Cek Pajak" },
                 { href: "/layanan#njkb", label: "Info NJKB" },
                 { href: "/layanan#pad", label: "Info PAD" },
-                { href: "https://esamsat.jambiprov.go.id", label: "E-Samsat", external: true },
+                { href: "https://play.google.com/store/search?q=e%20samsat&c=apps&hl=id", label: "Signal", external: true },
                 { href: "/galeri", label: "Galeri" },
                 { href: "/kontak", label: "Kontak Kami" },
               ].map((link) => (
@@ -114,10 +114,10 @@ export async function PublicFooter() {
                 <Phone className="h-4 w-4 flex-shrink-0 text-secondary" />
                 {settings.contact_phone || "(0741) 60436"}
               </li>
-              <li className="flex items-center gap-2 text-sm text-white/70">
+              {/* <li className="flex items-center gap-2 text-sm text-white/70">
                 <Mail className="h-4 w-4 flex-shrink-0 text-secondary" />
                 {settings.contact_email || "info@bapenda.jambiprov.go.id"}
-              </li>
+              </li> */}
               <li className="flex items-start gap-2 text-sm text-white/70">
                 <Clock className="h-4 w-4 mt-0.5 flex-shrink-0 text-secondary" />
                 {settings.office_hours || "Senin – Jumat: 08.00 – 16.00 WIB"}

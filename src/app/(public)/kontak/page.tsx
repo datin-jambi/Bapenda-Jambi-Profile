@@ -31,7 +31,7 @@ export default async function KontakPage() {
               { icon: Building2, label: "Nama Instansi", value: "Badan Pendapatan Daerah Provinsi Jambi" },
               { icon: MapPin, label: "Alamat", value: settings.contact_address || "Jl. Ahmad Yani No. 1, Kota Jambi 36122" },
               { icon: Phone, label: "Telepon", value: settings.contact_phone || "(0741) 60436" },
-              { icon: Mail, label: "Email", value: settings.contact_email || "info@bapenda.jambiprov.go.id" },
+              // { icon: Mail, label: "Email", value: settings.contact_email || "info@bapenda.jambiprov.go.id" },
               { icon: Clock, label: "Jam Operasional", value: settings.office_hours || "Senin – Jumat: 08.00 – 16.00 WIB" },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl min-w-0">
