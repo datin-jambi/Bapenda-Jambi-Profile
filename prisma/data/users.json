@@ -2,7 +2,7 @@
   {
     "role": "Super_Admin",
     "name": "Super Administrator",
-    "email": "superadmin@bapenda.jambiprov.go.id",
+    "email": "superadmin@gmail.com",
     "passwordHash": "$2a$12$/b65Inh5Jweuqyj8IBG1mOW70gMKVLLpOITOl9acptPfETzc/lGiW",
     "phone": "081234567890",
     "avatarUrl": null,
@@ -17,7 +17,7 @@
   {
     "role": "Admin",
     "name": "Administrator",
-    "email": "admin@bapenda.jambiprov.go.id",
+    "email": "admin@gmail.com",
     "passwordHash": "$2a$12$/b65Inh5Jweuqyj8IBG1mOW70gMKVLLpOITOl9acptPfETzc/lGiW",
     "phone": "081234567891",
     "avatarUrl": null,
@@ -32,7 +32,7 @@
   {
     "role": "Editor",
     "name": "Editor Konten",
-    "email": "editor@bapenda.jambiprov.go.id",
+    "email": "editor@gmail.com",
     "passwordHash": "$2a$12$/b65Inh5Jweuqyj8IBG1mOW70gMKVLLpOITOl9acptPfETzc/lGiW",
     "phone": "081234567892",
     "avatarUrl": null,
@@ -47,7 +47,7 @@
   {
     "role": "Ketua_Uptd",
     "name": "Ketua UPTD Kota Jambi",
-    "email": "ketua.uptd1@bapenda.jambiprov.go.id",
+    "email": "ketua.uptd1@gmail.com",
     "passwordHash": "$2a$12$/b65Inh5Jweuqyj8IBG1mOW70gMKVLLpOITOl9acptPfETzc/lGiW",
     "phone": "081234567893",
     "avatarUrl": null,
@@ -62,7 +62,7 @@
   {
     "role": "Admin_Uptd",
     "name": "Admin UPTD Kota Jambi",
-    "email": "admin.uptd1@bapenda.jambiprov.go.id",
+    "email": "admin.uptd1@gmail.com",
     "passwordHash": "$2a$12$/b65Inh5Jweuqyj8IBG1mOW70gMKVLLpOITOl9acptPfETzc/lGiW",
     "phone": "081234567894",
     "avatarUrl": null,

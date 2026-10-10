@@ -15,7 +15,8 @@
     "db:push:seed": "prisma db push && prisma db seed",
     "db:reset": "prisma migrate reset --force",
     "db:seed": "ts-node --compiler-options \"{\\\"module\\\":\\\"CommonJS\\\"}\" prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:test:connection": "node scripts/db-test-connection.mjs"
   },
   "prisma": {
     "seed": "ts-node -e \"process.env.TS_NODE_COMPILER_OPTIONS='{\\\"module\\\":\\\"commonjs\\\"}';require('./prisma/seed.ts')\""
