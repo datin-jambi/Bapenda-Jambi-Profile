@@ -108,12 +108,12 @@ export async function PublicFooter() {
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm text-white/70">
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0 text-secondary" />
-                {settings.contact_address || "Jl. Ahmad Yani No. 1, Kota Jambi 36122"}
+                {settings.contact_address || "Jalan Kol. Tarmizi Kodir No. 71. Pakuan Baru. Kecamatan Jambi Selatan 36138"}
               </li>
-              <li className="flex items-center gap-2 text-sm text-white/70">
+              {/* <li className="flex items-center gap-2 text-sm text-white/70">
                 <Phone className="h-4 w-4 flex-shrink-0 text-secondary" />
                 {settings.contact_phone || "(0741) 60436"}
-              </li>
+              </li> */}
               {/* <li className="flex items-center gap-2 text-sm text-white/70">
                 <Mail className="h-4 w-4 flex-shrink-0 text-secondary" />
                 {settings.contact_email || "info@bapenda.jambiprov.go.id"}
